@@ -1,0 +1,27 @@
+#!/usr/bin/python
+# 
+# unsupported check_mk plugin for xen
+# Florian Heigl <fh@mathias-kettner.de>
+
+def inventory_xen_vms(checkname, info):
+    return [ (("%s" % line[1] ), None) for line in info if line[0] == "vm" ]
+
+
+def check_xen_vms(item, params, info):
+    for line in info:
+        xentype = line[0]
+        vmname = line[1]
+        status = line[2]
+        if vmname == item:
+ 	    if status == "running":
+	        return (0, "OK - VM %s status is %s" % (item, status))
+            elif status == "paused":
+                return (1, "WARN - VM %s status is %s" % (item, status))
+            elif status == "crashed":
+                return (2, "CRIT - VM %s status is %s" % (item, status))
+            else:
+                return (3, "UNKNOWN - VM %s status unknown" % (item, status))
+            return
+
+check_info['xen.vms'] = \
+        (check_xen_vms, "VM %s", 0, inventory_xen_vms)

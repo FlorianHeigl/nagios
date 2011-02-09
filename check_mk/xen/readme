@@ -1,0 +1,14 @@
+
+a check_mk check plugin for running xen vms
+
+this is my dev tree, the master version will be at the check_mk exchange, 
+so please have a look there too.
+
+it is not easily possible to trace the status of a vm that was shutdown, 
+because it vanishes from xm list and all similar commands.
+the right thing[tm] appears to be to not create them using 
+xm create /path/to/cfgfile , but using
+xm new /path/to/cfgfile (and then one more command to "unpause" it?)
+
+I haven't tested it yet but already had to learn that this functionality is 
+broken on the new debian lenny.
