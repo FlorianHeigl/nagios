@@ -1,0 +1,26 @@
+define service{
+	use			generic-service
+	hostgroup_name		netbsd-ftp
+	service_description	FTP Access
+	check_command		check_ftp
+	notifications_enabled	0
+	normal_check_interval	30
+}
+
+define service{
+	use			generic-service
+	hostgroup_name		netbsd-www
+	service_description	HTTP Access
+	check_command		check_http
+	notifications_enabled	0
+	normal_check_interval	30
+}
+
+define service{
+	use			generic-service
+	hostgroup_name		netbsd-cvsup
+	check_command		check_ping!300.0,20%!1000.0,60%
+	service_description	CVS Access
+	notifications_enabled	0
+	normal_check_interval	30
+}

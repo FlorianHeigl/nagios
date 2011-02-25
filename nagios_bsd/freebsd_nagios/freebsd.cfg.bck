@@ -1,0 +1,2274 @@
+define service{
+	use			generic-service
+	hostgroup_name		freebsd-ftp
+	service_description	FTP Access
+	check_command		check_ftp
+	notifications_enabled	0
+	normal_check_interval	30
+}
+
+define service{
+	use			generic-service
+	hostgroup_name		freebsd-www
+	service_description	HTTP Access
+	check_command		check_http
+	notifications_enabled	0
+	normal_check_interval	30
+}
+
+define service{
+	use			generic-service
+	hostgroup_name		freebsd-cvsup
+	check_command		check_ping!300.0,20%!1000.0,60%
+	service_description	CVS Access
+	notifications_enabled	0
+	normal_check_interval	30
+}
+define hostgroup {
+  hostgroup_name freebsd-www
+  alias	FreeBSD www servers
+  members www1.am.freebsd.org,www.ar.freebsd.org,www.at.freebsd.org,www.au.freebsd.org,www1.au.freebsd.org,www2.au.freebsd.org,www3.au.freebsd.org,www4.au.freebsd.org,www5.au.freebsd.org,www6.au.freebsd.org,www7.au.freebsd.org,www.bg.freebsd.org,www.br.freebsd.org,www.ca.freebsd.org,www1.ca.freebsd.org,www2.ca.freebsd.org,www.ch.freebsd.org,www1.ch.freebsd.org,www2.ch.freebsd.org,www.cn.freebsd.org,www1.cr.freebsd.org,www.cz.freebsd.org,www.de.freebsd.org,www1.de.freebsd.org,www2.de.freebsd.org,www.dk.freebsd.org,www.ee.freebsd.org,www.es.freebsd.org,www.fi.freebsd.org,www.fr.freebsd.org,www.gr.freebsd.org,www1.gr.freebsd.org,www.hk.freebsd.org,www1.hk.freebsd.org,www2.hk.freebsd.org,www3.hk.freebsd.org,www4.hk.freebsd.org,www5.hk.freebsd.org,www6.hk.freebsd.org,www7.hk.freebsd.org,www8.hk.freebsd.org,www9.hk.freebsd.org,www10.hk.freebsd.org,www11.hk.freebsd.org,www.hu.freebsd.org,www.id.freebsd.org,www.ie.freebsd.org,www.is.freebsd.org,www1.is.freebsd.org,www.it.freebsd.org,www.jp.freebsd.org,www.kg.freebsd.org,www.kr.freebsd.org,www.kw.freebsd.org,www.lt.freebsd.org,www.lv.freebsd.org,www.nl.freebsd.org,www.no.freebsd.org,www.nz.freebsd.org,www.ph.freebsd.org,www.pl.freebsd.org,www1.pt.freebsd.org,www.ro.freebsd.org,www1.ro.freebsd.org,www2.ro.freebsd.org,www3.ro.freebsd.org,www.ru.freebsd.org,www1.ru.freebsd.org,www2.ru.freebsd.org,www3.ru.freebsd.org,www4.ru.freebsd.org,www5.ru.freebsd.org,www.se.freebsd.org,www.sg.freebsd.org,www1.sg.freebsd.org,www2.sg.freebsd.org,www3.sg.freebsd.org,www4.sg.freebsd.org,www5.sg.freebsd.org,www6.sg.freebsd.org,www7.sg.freebsd.org,www8.sg.freebsd.org,www9.sg.freebsd.org,www10.sg.freebsd.org,www11.sg.freebsd.org,www.si.freebsd.org,www.sk.freebsd.org,www1.sk.freebsd.org,www.th.freebsd.org,www1.th.freebsd.org,www.tr.freebsd.org,www.tw.freebsd.org,www1.tw.freebsd.org,www2.tw.freebsd.org,www3.tw.freebsd.org,www4.tw.freebsd.org,www5.tw.freebsd.org,www6.tw.freebsd.org,www7.tw.freebsd.org,www.ua.freebsd.org,www1.ua.freebsd.org,www2.ua.freebsd.org,www.uk.freebsd.org,www1.uk.freebsd.org,www2.uk.freebsd.org,www3.uk.freebsd.org,www4.uk.freebsd.org,www.za.freebsd.org,
+  }
+define hostgroup {
+  hostgroup_name freebsd-ftp
+  alias	FreeBSD ftp servers
+  members ftp1.am.freebsd.org,ftp.ar.freebsd.org,ftp.at.freebsd.org,ftp.au.freebsd.org,ftp1.au.freebsd.org,ftp2.au.freebsd.org,ftp3.au.freebsd.org,ftp4.au.freebsd.org,ftp5.au.freebsd.org,ftp6.au.freebsd.org,ftp7.au.freebsd.org,ftp1.be.freebsd.org,ftp.bg.freebsd.org,ftp.br.freebsd.org,ftp1.br.freebsd.org,ftp2.br.freebsd.org,ftp3.br.freebsd.org,ftp4.br.freebsd.org,ftp5.br.freebsd.org,ftp6.br.freebsd.org,ftp7.br.freebsd.org,ftp.ca.freebsd.org,ftp1.ca.freebsd.org,ftp2.ca.freebsd.org,ftp3.ca.freebsd.org,ftp.ch.freebsd.org,ftp.cn.freebsd.org,ftp.cz.freebsd.org,ftp.de.freebsd.org,ftp1.de.freebsd.org,ftp2.de.freebsd.org,ftp3.de.freebsd.org,ftp4.de.freebsd.org,ftp5.de.freebsd.org,ftp6.de.freebsd.org,ftp7.de.freebsd.org,ftp8.de.freebsd.org,ftp.dk.freebsd.org,ftp.ee.freebsd.org,ftp.es.freebsd.org,ftp.fi.freebsd.org,ftp.fr.freebsd.org,ftp1.fr.freebsd.org,ftp2.fr.freebsd.org,ftp3.fr.freebsd.org,ftp4.fr.freebsd.org,ftp5.fr.freebsd.org,ftp6.fr.freebsd.org,ftp7.fr.freebsd.org,ftp8.fr.freebsd.org,ftp.gr.freebsd.org,ftp1.gr.freebsd.org,ftp2.gr.freebsd.org,ftp.hk.freebsd.org,ftp1.hk.freebsd.org,ftp2.hk.freebsd.org,ftp3.hk.freebsd.org,ftp4.hk.freebsd.org,ftp5.hk.freebsd.org,ftp6.hk.freebsd.org,ftp7.hk.freebsd.org,ftp8.hk.freebsd.org,ftp9.hk.freebsd.org,ftp10.hk.freebsd.org,ftp11.hk.freebsd.org,ftp.hr.freebsd.org,ftp.hu.freebsd.org,ftp.id.freebsd.org,ftp.ie.freebsd.org,ftp.il.freebsd.org,ftp.is.freebsd.org,ftp1.is.freebsd.org,ftp.it.freebsd.org,ftp.jp.freebsd.org,ftp1.jp.freebsd.org,ftp2.jp.freebsd.org,ftp3.jp.freebsd.org,ftp4.jp.freebsd.org,ftp5.jp.freebsd.org,ftp6.jp.freebsd.org,ftp7.jp.freebsd.org,ftp8.jp.freebsd.org,ftp9.jp.freebsd.org,ftp.kr.freebsd.org,ftp.lt.freebsd.org,ftp1.lt.freebsd.org,ftp2.lt.freebsd.org,ftp.lv.freebsd.org,ftp.nl.freebsd.org,ftp.no.freebsd.org,ftp.nz.freebsd.org,ftp1.ph.freebsd.org,ftp2.ph.freebsd.org,ftp.pl.freebsd.org,ftp.pt.freebsd.org,ftp.ro.freebsd.org,ftp1.ro.freebsd.org,ftp2.ro.freebsd.org,ftp.ru.freebsd.org,ftp1.ru.freebsd.org,ftp2.ru.freebsd.org,ftp3.ru.freebsd.org,ftp4.ru.freebsd.org,ftp5.ru.freebsd.org,ftp.se.freebsd.org,ftp.sg.freebsd.org,ftp1.sg.freebsd.org,ftp2.sg.freebsd.org,ftp3.sg.freebsd.org,ftp4.sg.freebsd.org,ftp5.sg.freebsd.org,ftp6.sg.freebsd.org,ftp7.sg.freebsd.org,ftp8.sg.freebsd.org,ftp9.sg.freebsd.org,ftp10.sg.freebsd.org,ftp11.sg.freebsd.org,ftp.si.freebsd.org,ftp.sk.freebsd.org,ftp.tr.freebsd.org,ftp.tw.freebsd.org,ftp1.tw.freebsd.org,ftp2.tw.freebsd.org,ftp3.tw.freebsd.org,ftp4.tw.freebsd.org,ftp5.tw.freebsd.org,ftp6.tw.freebsd.org,ftp7.tw.freebsd.org,ftp8.tw.freebsd.org,ftp9.tw.freebsd.org,ftp10.tw.freebsd.org,ftp11.tw.freebsd.org,ftp.ua.freebsd.org,ftp.uk.freebsd.org,ftp1.us.freebsd.org,ftp2.us.freebsd.org,ftp3.us.freebsd.org,ftp4.us.freebsd.org,ftp5.us.freebsd.org,ftp6.us.freebsd.org,ftp7.us.freebsd.org,ftp8.us.freebsd.org,ftp9.us.freebsd.org,ftp10.us.freebsd.org,ftp11.us.freebsd.org,ftp.za.freebsd.org,
+  }
+define hostgroup {
+  hostgroup_name freebsd-cvsup
+  alias	FreeBSD cvsup servers
+  members cvsup1.am.freebsd.org,cvsup.ar.freebsd.org,cvsup.at.freebsd.org,cvsup.au.freebsd.org,cvsup.bg.freebsd.org,cvsup.br.freebsd.org,cvsup.ca.freebsd.org,cvsup1.ca.freebsd.org,cvsup2.ca.freebsd.org,cvsup3.ca.freebsd.org,cvsup.ch.freebsd.org,cvsup.cn.freebsd.org,cvsup1.cr.freebsd.org,cvsup.cz.freebsd.org,cvsup.de.freebsd.org,cvsup1.de.freebsd.org,cvsup2.de.freebsd.org,cvsup3.de.freebsd.org,cvsup4.de.freebsd.org,cvsup5.de.freebsd.org,cvsup6.de.freebsd.org,cvsup7.de.freebsd.org,cvsup8.de.freebsd.org,cvsup.dk.freebsd.org,cvsup.ee.freebsd.org,cvsup.es.freebsd.org,cvsup.fi.freebsd.org,cvsup.fr.freebsd.org,cvsup.gr.freebsd.org,cvsup1.gr.freebsd.org,cvsup2.gr.freebsd.org,cvsup.hk.freebsd.org,cvsup1.hk.freebsd.org,cvsup2.hk.freebsd.org,cvsup3.hk.freebsd.org,cvsup4.hk.freebsd.org,cvsup5.hk.freebsd.org,cvsup6.hk.freebsd.org,cvsup7.hk.freebsd.org,cvsup8.hk.freebsd.org,cvsup9.hk.freebsd.org,cvsup10.hk.freebsd.org,cvsup11.hk.freebsd.org,cvsup.hu.freebsd.org,cvsup.id.freebsd.org,cvsup.ie.freebsd.org,cvsup.il.freebsd.org,cvsup.is.freebsd.org,cvsup1.is.freebsd.org,cvsup.it.freebsd.org,cvsup.jp.freebsd.org,cvsup.kg.freebsd.org,cvsup.kr.freebsd.org,cvsup1.kw.freebsd.org,cvsup.lt.freebsd.org,cvsup1.lt.freebsd.org,cvsup2.lt.freebsd.org,cvsup3.lt.freebsd.org,cvsup.lv.freebsd.org,cvsup.nl.freebsd.org,cvsup.no.freebsd.org,cvsup.nz.freebsd.org,cvsup1.ph.freebsd.org,cvsup.pl.freebsd.org,cvsup1.pl.freebsd.org,cvsup2.pl.freebsd.org,cvsup3.pl.freebsd.org,cvsup.pt.freebsd.org,cvsup.ro.freebsd.org,cvsup1.ro.freebsd.org,cvsup2.ro.freebsd.org,cvsup3.ro.freebsd.org,cvsup.ru.freebsd.org,cvsup1.ru.freebsd.org,cvsup2.ru.freebsd.org,cvsup3.ru.freebsd.org,cvsup4.ru.freebsd.org,cvsup5.ru.freebsd.org,cvsup6.ru.freebsd.org,cvsup7.ru.freebsd.org,cvsup.se.freebsd.org,cvsup.sg.freebsd.org,cvsup1.sg.freebsd.org,cvsup2.sg.freebsd.org,cvsup3.sg.freebsd.org,cvsup4.sg.freebsd.org,cvsup5.sg.freebsd.org,cvsup6.sg.freebsd.org,cvsup7.sg.freebsd.org,cvsup8.sg.freebsd.org,cvsup9.sg.freebsd.org,cvsup10.sg.freebsd.org,cvsup11.sg.freebsd.org,cvsup.si.freebsd.org,cvsup.sk.freebsd.org,cvsup.th.freebsd.org,cvsup1.th.freebsd.org,cvsup.tr.freebsd.org,cvsup.tw.freebsd.org,cvsup1.tw.freebsd.org,cvsup2.tw.freebsd.org,cvsup3.tw.freebsd.org,cvsup4.tw.freebsd.org,cvsup.ua.freebsd.org,cvsup.uk.freebsd.org,cvsup.us.freebsd.org,cvsup1.us.freebsd.org,cvsup2.us.freebsd.org,cvsup3.us.freebsd.org,cvsup4.us.freebsd.org,cvsup5.us.freebsd.org,cvsup6.us.freebsd.org,cvsup7.us.freebsd.org,cvsup8.us.freebsd.org,cvsup9.us.freebsd.org,cvsup10.us.freebsd.org,cvsup11.us.freebsd.org,cvsup.za.freebsd.org,
+  }
+#### Host definitions ####
+define host {
+	use		generic-host
+	host_name	ftp1.am.freebsd.org
+	address		ftp1.am.freebsd.org
+	alias		ftp1.am.freebsd.org
+}
+define host {
+	use		generic-host
+	host_name	ftp.ar.freebsd.org
+	address		ftp.ar.freebsd.org
+	alias		ftp.ar.freebsd.org
+}
+define host {
+	use		generic-host
+	host_name	ftp.at.freebsd.org
+	address		ftp.at.freebsd.org
+	alias		ftp.at.freebsd.org
+}
+define host {
+	use		generic-host
+	host_name	ftp.au.freebsd.org
+	address		ftp.au.freebsd.org
+	alias		ftp.au.freebsd.org
+}
+define host {
+	use		generic-host
+	host_name	ftp1.au.freebsd.org
+	address		ftp1.au.freebsd.org
+	alias		ftp1.au.freebsd.org
+}
+define host {
+	use		generic-host
+	host_name	ftp2.au.freebsd.org
+	address		ftp2.au.freebsd.org
+	alias		ftp2.au.freebsd.org
+}
+define host {
+	use		generic-host
+	host_name	ftp3.au.freebsd.org
+	address		ftp3.au.freebsd.org
+	alias		ftp3.au.freebsd.org
+}
+define host {
+	use		generic-host
+	host_name	ftp4.au.freebsd.org
+	address		ftp4.au.freebsd.org
+	alias		ftp4.au.freebsd.org
+}
+define host {
+	use		generic-host
+	host_name	ftp5.au.freebsd.org
+	address		ftp5.au.freebsd.org
+	alias		ftp5.au.freebsd.org
+}
+define host {
+	use		generic-host
+	host_name	ftp6.au.freebsd.org
+	address		ftp6.au.freebsd.org
+	alias		ftp6.au.freebsd.org
+}
+define host {
+	use		generic-host
+	host_name	ftp7.au.freebsd.org
+	address		ftp7.au.freebsd.org
+	alias		ftp7.au.freebsd.org
+}
+define host {
+	use		generic-host
+	host_name	ftp1.be.freebsd.org
+	address		ftp1.be.freebsd.org
+	alias		ftp1.be.freebsd.org
+}
+define host {
+	use		generic-host
+	host_name	ftp.bg.freebsd.org
+	address		ftp.bg.freebsd.org
+	alias		ftp.bg.freebsd.org
+}
+define host {
+	use		generic-host
+	host_name	ftp.br.freebsd.org
+	address		ftp.br.freebsd.org
+	alias		ftp.br.freebsd.org
+}
+define host {
+	use		generic-host
+	host_name	ftp1.br.freebsd.org
+	address		ftp1.br.freebsd.org
+	alias		ftp1.br.freebsd.org
+}
+define host {
+	use		generic-host
+	host_name	ftp2.br.freebsd.org
+	address		ftp2.br.freebsd.org
+	alias		ftp2.br.freebsd.org
+}
+define host {
+	use		generic-host
+	host_name	ftp3.br.freebsd.org
+	address		ftp3.br.freebsd.org
+	alias		ftp3.br.freebsd.org
+}
+define host {
+	use		generic-host
+	host_name	ftp4.br.freebsd.org
+	address		ftp4.br.freebsd.org
+	alias		ftp4.br.freebsd.org
+}
+define host {
+	use		generic-host
+	host_name	ftp5.br.freebsd.org
+	address		ftp5.br.freebsd.org
+	alias		ftp5.br.freebsd.org
+}
+define host {
+	use		generic-host
+	host_name	ftp6.br.freebsd.org
+	address		ftp6.br.freebsd.org
+	alias		ftp6.br.freebsd.org
+}
+define host {
+	use		generic-host
+	host_name	ftp7.br.freebsd.org
+	address		ftp7.br.freebsd.org
+	alias		ftp7.br.freebsd.org
+}
+define host {
+	use		generic-host
+	host_name	ftp.ca.freebsd.org
+	address		ftp.ca.freebsd.org
+	alias		ftp.ca.freebsd.org
+}
+define host {
+	use		generic-host
+	host_name	ftp1.ca.freebsd.org
+	address		ftp1.ca.freebsd.org
+	alias		ftp1.ca.freebsd.org
+}
+define host {
+	use		generic-host
+	host_name	ftp2.ca.freebsd.org
+	address		ftp2.ca.freebsd.org
+	alias		ftp2.ca.freebsd.org
+}
+define host {
+	use		generic-host
+	host_name	ftp3.ca.freebsd.org
+	address		ftp3.ca.freebsd.org
+	alias		ftp3.ca.freebsd.org
+}
+define host {
+	use		generic-host
+	host_name	ftp.ch.freebsd.org
+	address		ftp.ch.freebsd.org
+	alias		ftp.ch.freebsd.org
+}
+define host {
+	use		generic-host
+	host_name	ftp.cn.freebsd.org
+	address		ftp.cn.freebsd.org
+	alias		ftp.cn.freebsd.org
+}
+define host {
+	use		generic-host
+	host_name	ftp.cz.freebsd.org
+	address		ftp.cz.freebsd.org
+	alias		ftp.cz.freebsd.org
+}
+define host {
+	use		generic-host
+	host_name	ftp.de.freebsd.org
+	address		ftp.de.freebsd.org
+	alias		ftp.de.freebsd.org
+}
+define host {
+	use		generic-host
+	host_name	ftp1.de.freebsd.org
+	address		ftp1.de.freebsd.org
+	alias		ftp1.de.freebsd.org
+}
+define host {
+	use		generic-host
+	host_name	ftp2.de.freebsd.org
+	address		ftp2.de.freebsd.org
+	alias		ftp2.de.freebsd.org
+}
+define host {
+	use		generic-host
+	host_name	ftp3.de.freebsd.org
+	address		ftp3.de.freebsd.org
+	alias		ftp3.de.freebsd.org
+}
+define host {
+	use		generic-host
+	host_name	ftp4.de.freebsd.org
+	address		ftp4.de.freebsd.org
+	alias		ftp4.de.freebsd.org
+}
+define host {
+	use		generic-host
+	host_name	ftp5.de.freebsd.org
+	address		ftp5.de.freebsd.org
+	alias		ftp5.de.freebsd.org
+}
+define host {
+	use		generic-host
+	host_name	ftp6.de.freebsd.org
+	address		ftp6.de.freebsd.org
+	alias		ftp6.de.freebsd.org
+}
+define host {
+	use		generic-host
+	host_name	ftp7.de.freebsd.org
+	address		ftp7.de.freebsd.org
+	alias		ftp7.de.freebsd.org
+}
+define host {
+	use		generic-host
+	host_name	ftp8.de.freebsd.org
+	address		ftp8.de.freebsd.org
+	alias		ftp8.de.freebsd.org
+}
+define host {
+	use		generic-host
+	host_name	ftp.dk.freebsd.org
+	address		ftp.dk.freebsd.org
+	alias		ftp.dk.freebsd.org
+}
+define host {
+	use		generic-host
+	host_name	ftp.ee.freebsd.org
+	address		ftp.ee.freebsd.org
+	alias		ftp.ee.freebsd.org
+}
+define host {
+	use		generic-host
+	host_name	ftp.es.freebsd.org
+	address		ftp.es.freebsd.org
+	alias		ftp.es.freebsd.org
+}
+define host {
+	use		generic-host
+	host_name	ftp.fi.freebsd.org
+	address		ftp.fi.freebsd.org
+	alias		ftp.fi.freebsd.org
+}
+define host {
+	use		generic-host
+	host_name	ftp.fr.freebsd.org
+	address		ftp.fr.freebsd.org
+	alias		ftp.fr.freebsd.org
+}
+define host {
+	use		generic-host
+	host_name	ftp1.fr.freebsd.org
+	address		ftp1.fr.freebsd.org
+	alias		ftp1.fr.freebsd.org
+}
+define host {
+	use		generic-host
+	host_name	ftp2.fr.freebsd.org
+	address		ftp2.fr.freebsd.org
+	alias		ftp2.fr.freebsd.org
+}
+define host {
+	use		generic-host
+	host_name	ftp3.fr.freebsd.org
+	address		ftp3.fr.freebsd.org
+	alias		ftp3.fr.freebsd.org
+}
+define host {
+	use		generic-host
+	host_name	ftp4.fr.freebsd.org
+	address		ftp4.fr.freebsd.org
+	alias		ftp4.fr.freebsd.org
+}
+define host {
+	use		generic-host
+	host_name	ftp5.fr.freebsd.org
+	address		ftp5.fr.freebsd.org
+	alias		ftp5.fr.freebsd.org
+}
+define host {
+	use		generic-host
+	host_name	ftp6.fr.freebsd.org
+	address		ftp6.fr.freebsd.org
+	alias		ftp6.fr.freebsd.org
+}
+define host {
+	use		generic-host
+	host_name	ftp7.fr.freebsd.org
+	address		ftp7.fr.freebsd.org
+	alias		ftp7.fr.freebsd.org
+}
+define host {
+	use		generic-host
+	host_name	ftp8.fr.freebsd.org
+	address		ftp8.fr.freebsd.org
+	alias		ftp8.fr.freebsd.org
+}
+define host {
+	use		generic-host
+	host_name	ftp.gr.freebsd.org
+	address		ftp.gr.freebsd.org
+	alias		ftp.gr.freebsd.org
+}
+define host {
+	use		generic-host
+	host_name	ftp1.gr.freebsd.org
+	address		ftp1.gr.freebsd.org
+	alias		ftp1.gr.freebsd.org
+}
+define host {
+	use		generic-host
+	host_name	ftp2.gr.freebsd.org
+	address		ftp2.gr.freebsd.org
+	alias		ftp2.gr.freebsd.org
+}
+define host {
+	use		generic-host
+	host_name	ftp.hk.freebsd.org
+	address		ftp.hk.freebsd.org
+	alias		ftp.hk.freebsd.org
+}
+define host {
+	use		generic-host
+	host_name	ftp1.hk.freebsd.org
+	address		ftp1.hk.freebsd.org
+	alias		ftp1.hk.freebsd.org
+}
+define host {
+	use		generic-host
+	host_name	ftp2.hk.freebsd.org
+	address		ftp2.hk.freebsd.org
+	alias		ftp2.hk.freebsd.org
+}
+define host {
+	use		generic-host
+	host_name	ftp3.hk.freebsd.org
+	address		ftp3.hk.freebsd.org
+	alias		ftp3.hk.freebsd.org
+}
+define host {
+	use		generic-host
+	host_name	ftp4.hk.freebsd.org
+	address		ftp4.hk.freebsd.org
+	alias		ftp4.hk.freebsd.org
+}
+define host {
+	use		generic-host
+	host_name	ftp5.hk.freebsd.org
+	address		ftp5.hk.freebsd.org
+	alias		ftp5.hk.freebsd.org
+}
+define host {
+	use		generic-host
+	host_name	ftp6.hk.freebsd.org
+	address		ftp6.hk.freebsd.org
+	alias		ftp6.hk.freebsd.org
+}
+define host {
+	use		generic-host
+	host_name	ftp7.hk.freebsd.org
+	address		ftp7.hk.freebsd.org
+	alias		ftp7.hk.freebsd.org
+}
+define host {
+	use		generic-host
+	host_name	ftp8.hk.freebsd.org
+	address		ftp8.hk.freebsd.org
+	alias		ftp8.hk.freebsd.org
+}
+define host {
+	use		generic-host
+	host_name	ftp9.hk.freebsd.org
+	address		ftp9.hk.freebsd.org
+	alias		ftp9.hk.freebsd.org
+}
+define host {
+	use		generic-host
+	host_name	ftp10.hk.freebsd.org
+	address		ftp10.hk.freebsd.org
+	alias		ftp10.hk.freebsd.org
+}
+define host {
+	use		generic-host
+	host_name	ftp11.hk.freebsd.org
+	address		ftp11.hk.freebsd.org
+	alias		ftp11.hk.freebsd.org
+}
+define host {
+	use		generic-host
+	host_name	ftp.hr.freebsd.org
+	address		ftp.hr.freebsd.org
+	alias		ftp.hr.freebsd.org
+}
+define host {
+	use		generic-host
+	host_name	ftp.hu.freebsd.org
+	address		ftp.hu.freebsd.org
+	alias		ftp.hu.freebsd.org
+}
+define host {
+	use		generic-host
+	host_name	ftp.id.freebsd.org
+	address		ftp.id.freebsd.org
+	alias		ftp.id.freebsd.org
+}
+define host {
+	use		generic-host
+	host_name	ftp.ie.freebsd.org
+	address		ftp.ie.freebsd.org
+	alias		ftp.ie.freebsd.org
+}
+define host {
+	use		generic-host
+	host_name	ftp.il.freebsd.org
+	address		ftp.il.freebsd.org
+	alias		ftp.il.freebsd.org
+}
+define host {
+	use		generic-host
+	host_name	ftp.is.freebsd.org
+	address		ftp.is.freebsd.org
+	alias		ftp.is.freebsd.org
+}
+define host {
+	use		generic-host
+	host_name	ftp1.is.freebsd.org
+	address		ftp1.is.freebsd.org
+	alias		ftp1.is.freebsd.org
+}
+define host {
+	use		generic-host
+	host_name	ftp.it.freebsd.org
+	address		ftp.it.freebsd.org
+	alias		ftp.it.freebsd.org
+}
+define host {
+	use		generic-host
+	host_name	ftp.jp.freebsd.org
+	address		ftp.jp.freebsd.org
+	alias		ftp.jp.freebsd.org
+}
+define host {
+	use		generic-host
+	host_name	ftp1.jp.freebsd.org
+	address		ftp1.jp.freebsd.org
+	alias		ftp1.jp.freebsd.org
+}
+define host {
+	use		generic-host
+	host_name	ftp2.jp.freebsd.org
+	address		ftp2.jp.freebsd.org
+	alias		ftp2.jp.freebsd.org
+}
+define host {
+	use		generic-host
+	host_name	ftp3.jp.freebsd.org
+	address		ftp3.jp.freebsd.org
+	alias		ftp3.jp.freebsd.org
+}
+define host {
+	use		generic-host
+	host_name	ftp4.jp.freebsd.org
+	address		ftp4.jp.freebsd.org
+	alias		ftp4.jp.freebsd.org
+}
+define host {
+	use		generic-host
+	host_name	ftp5.jp.freebsd.org
+	address		ftp5.jp.freebsd.org
+	alias		ftp5.jp.freebsd.org
+}
+define host {
+	use		generic-host
+	host_name	ftp6.jp.freebsd.org
+	address		ftp6.jp.freebsd.org
+	alias		ftp6.jp.freebsd.org
+}
+define host {
+	use		generic-host
+	host_name	ftp7.jp.freebsd.org
+	address		ftp7.jp.freebsd.org
+	alias		ftp7.jp.freebsd.org
+}
+define host {
+	use		generic-host
+	host_name	ftp8.jp.freebsd.org
+	address		ftp8.jp.freebsd.org
+	alias		ftp8.jp.freebsd.org
+}
+define host {
+	use		generic-host
+	host_name	ftp9.jp.freebsd.org
+	address		ftp9.jp.freebsd.org
+	alias		ftp9.jp.freebsd.org
+}
+define host {
+	use		generic-host
+	host_name	ftp.kr.freebsd.org
+	address		ftp.kr.freebsd.org
+	alias		ftp.kr.freebsd.org
+}
+define host {
+	use		generic-host
+	host_name	ftp.lt.freebsd.org
+	address		ftp.lt.freebsd.org
+	alias		ftp.lt.freebsd.org
+}
+define host {
+	use		generic-host
+	host_name	ftp1.lt.freebsd.org
+	address		ftp1.lt.freebsd.org
+	alias		ftp1.lt.freebsd.org
+}
+define host {
+	use		generic-host
+	host_name	ftp2.lt.freebsd.org
+	address		ftp2.lt.freebsd.org
+	alias		ftp2.lt.freebsd.org
+}
+define host {
+	use		generic-host
+	host_name	ftp.lv.freebsd.org
+	address		ftp.lv.freebsd.org
+	alias		ftp.lv.freebsd.org
+}
+define host {
+	use		generic-host
+	host_name	ftp.nl.freebsd.org
+	address		ftp.nl.freebsd.org
+	alias		ftp.nl.freebsd.org
+}
+define host {
+	use		generic-host
+	host_name	ftp.no.freebsd.org
+	address		ftp.no.freebsd.org
+	alias		ftp.no.freebsd.org
+}
+define host {
+	use		generic-host
+	host_name	ftp.nz.freebsd.org
+	address		ftp.nz.freebsd.org
+	alias		ftp.nz.freebsd.org
+}
+define host {
+	use		generic-host
+	host_name	ftp1.ph.freebsd.org
+	address		ftp1.ph.freebsd.org
+	alias		ftp1.ph.freebsd.org
+}
+define host {
+	use		generic-host
+	host_name	ftp2.ph.freebsd.org
+	address		ftp2.ph.freebsd.org
+	alias		ftp2.ph.freebsd.org
+}
+define host {
+	use		generic-host
+	host_name	ftp.pl.freebsd.org
+	address		ftp.pl.freebsd.org
+	alias		ftp.pl.freebsd.org
+}
+define host {
+	use		generic-host
+	host_name	ftp.pt.freebsd.org
+	address		ftp.pt.freebsd.org
+	alias		ftp.pt.freebsd.org
+}
+define host {
+	use		generic-host
+	host_name	ftp.ro.freebsd.org
+	address		ftp.ro.freebsd.org
+	alias		ftp.ro.freebsd.org
+}
+define host {
+	use		generic-host
+	host_name	ftp1.ro.freebsd.org
+	address		ftp1.ro.freebsd.org
+	alias		ftp1.ro.freebsd.org
+}
+define host {
+	use		generic-host
+	host_name	ftp2.ro.freebsd.org
+	address		ftp2.ro.freebsd.org
+	alias		ftp2.ro.freebsd.org
+}
+define host {
+	use		generic-host
+	host_name	ftp.ru.freebsd.org
+	address		ftp.ru.freebsd.org
+	alias		ftp.ru.freebsd.org
+}
+define host {
+	use		generic-host
+	host_name	ftp1.ru.freebsd.org
+	address		ftp1.ru.freebsd.org
+	alias		ftp1.ru.freebsd.org
+}
+define host {
+	use		generic-host
+	host_name	ftp2.ru.freebsd.org
+	address		ftp2.ru.freebsd.org
+	alias		ftp2.ru.freebsd.org
+}
+define host {
+	use		generic-host
+	host_name	ftp3.ru.freebsd.org
+	address		ftp3.ru.freebsd.org
+	alias		ftp3.ru.freebsd.org
+}
+define host {
+	use		generic-host
+	host_name	ftp4.ru.freebsd.org
+	address		ftp4.ru.freebsd.org
+	alias		ftp4.ru.freebsd.org
+}
+define host {
+	use		generic-host
+	host_name	ftp5.ru.freebsd.org
+	address		ftp5.ru.freebsd.org
+	alias		ftp5.ru.freebsd.org
+}
+define host {
+	use		generic-host
+	host_name	ftp.se.freebsd.org
+	address		ftp.se.freebsd.org
+	alias		ftp.se.freebsd.org
+}
+define host {
+	use		generic-host
+	host_name	ftp.sg.freebsd.org
+	address		ftp.sg.freebsd.org
+	alias		ftp.sg.freebsd.org
+}
+define host {
+	use		generic-host
+	host_name	ftp1.sg.freebsd.org
+	address		ftp1.sg.freebsd.org
+	alias		ftp1.sg.freebsd.org
+}
+define host {
+	use		generic-host
+	host_name	ftp2.sg.freebsd.org
+	address		ftp2.sg.freebsd.org
+	alias		ftp2.sg.freebsd.org
+}
+define host {
+	use		generic-host
+	host_name	ftp3.sg.freebsd.org
+	address		ftp3.sg.freebsd.org
+	alias		ftp3.sg.freebsd.org
+}
+define host {
+	use		generic-host
+	host_name	ftp4.sg.freebsd.org
+	address		ftp4.sg.freebsd.org
+	alias		ftp4.sg.freebsd.org
+}
+define host {
+	use		generic-host
+	host_name	ftp5.sg.freebsd.org
+	address		ftp5.sg.freebsd.org
+	alias		ftp5.sg.freebsd.org
+}
+define host {
+	use		generic-host
+	host_name	ftp6.sg.freebsd.org
+	address		ftp6.sg.freebsd.org
+	alias		ftp6.sg.freebsd.org
+}
+define host {
+	use		generic-host
+	host_name	ftp7.sg.freebsd.org
+	address		ftp7.sg.freebsd.org
+	alias		ftp7.sg.freebsd.org
+}
+define host {
+	use		generic-host
+	host_name	ftp8.sg.freebsd.org
+	address		ftp8.sg.freebsd.org
+	alias		ftp8.sg.freebsd.org
+}
+define host {
+	use		generic-host
+	host_name	ftp9.sg.freebsd.org
+	address		ftp9.sg.freebsd.org
+	alias		ftp9.sg.freebsd.org
+}
+define host {
+	use		generic-host
+	host_name	ftp10.sg.freebsd.org
+	address		ftp10.sg.freebsd.org
+	alias		ftp10.sg.freebsd.org
+}
+define host {
+	use		generic-host
+	host_name	ftp11.sg.freebsd.org
+	address		ftp11.sg.freebsd.org
+	alias		ftp11.sg.freebsd.org
+}
+define host {
+	use		generic-host
+	host_name	ftp.si.freebsd.org
+	address		ftp.si.freebsd.org
+	alias		ftp.si.freebsd.org
+}
+define host {
+	use		generic-host
+	host_name	ftp.sk.freebsd.org
+	address		ftp.sk.freebsd.org
+	alias		ftp.sk.freebsd.org
+}
+define host {
+	use		generic-host
+	host_name	ftp.tr.freebsd.org
+	address		ftp.tr.freebsd.org
+	alias		ftp.tr.freebsd.org
+}
+define host {
+	use		generic-host
+	host_name	ftp.tw.freebsd.org
+	address		ftp.tw.freebsd.org
+	alias		ftp.tw.freebsd.org
+}
+define host {
+	use		generic-host
+	host_name	ftp1.tw.freebsd.org
+	address		ftp1.tw.freebsd.org
+	alias		ftp1.tw.freebsd.org
+}
+define host {
+	use		generic-host
+	host_name	ftp2.tw.freebsd.org
+	address		ftp2.tw.freebsd.org
+	alias		ftp2.tw.freebsd.org
+}
+define host {
+	use		generic-host
+	host_name	ftp3.tw.freebsd.org
+	address		ftp3.tw.freebsd.org
+	alias		ftp3.tw.freebsd.org
+}
+define host {
+	use		generic-host
+	host_name	ftp4.tw.freebsd.org
+	address		ftp4.tw.freebsd.org
+	alias		ftp4.tw.freebsd.org
+}
+define host {
+	use		generic-host
+	host_name	ftp5.tw.freebsd.org
+	address		ftp5.tw.freebsd.org
+	alias		ftp5.tw.freebsd.org
+}
+define host {
+	use		generic-host
+	host_name	ftp6.tw.freebsd.org
+	address		ftp6.tw.freebsd.org
+	alias		ftp6.tw.freebsd.org
+}
+define host {
+	use		generic-host
+	host_name	ftp7.tw.freebsd.org
+	address		ftp7.tw.freebsd.org
+	alias		ftp7.tw.freebsd.org
+}
+define host {
+	use		generic-host
+	host_name	ftp8.tw.freebsd.org
+	address		ftp8.tw.freebsd.org
+	alias		ftp8.tw.freebsd.org
+}
+define host {
+	use		generic-host
+	host_name	ftp9.tw.freebsd.org
+	address		ftp9.tw.freebsd.org
+	alias		ftp9.tw.freebsd.org
+}
+define host {
+	use		generic-host
+	host_name	ftp10.tw.freebsd.org
+	address		ftp10.tw.freebsd.org
+	alias		ftp10.tw.freebsd.org
+}
+define host {
+	use		generic-host
+	host_name	ftp11.tw.freebsd.org
+	address		ftp11.tw.freebsd.org
+	alias		ftp11.tw.freebsd.org
+}
+define host {
+	use		generic-host
+	host_name	ftp.ua.freebsd.org
+	address		ftp.ua.freebsd.org
+	alias		ftp.ua.freebsd.org
+}
+define host {
+	use		generic-host
+	host_name	ftp.uk.freebsd.org
+	address		ftp.uk.freebsd.org
+	alias		ftp.uk.freebsd.org
+}
+define host {
+	use		generic-host
+	host_name	ftp1.us.freebsd.org
+	address		ftp1.us.freebsd.org
+	alias		ftp1.us.freebsd.org
+}
+define host {
+	use		generic-host
+	host_name	ftp2.us.freebsd.org
+	address		ftp2.us.freebsd.org
+	alias		ftp2.us.freebsd.org
+}
+define host {
+	use		generic-host
+	host_name	ftp3.us.freebsd.org
+	address		ftp3.us.freebsd.org
+	alias		ftp3.us.freebsd.org
+}
+define host {
+	use		generic-host
+	host_name	ftp4.us.freebsd.org
+	address		ftp4.us.freebsd.org
+	alias		ftp4.us.freebsd.org
+}
+define host {
+	use		generic-host
+	host_name	ftp5.us.freebsd.org
+	address		ftp5.us.freebsd.org
+	alias		ftp5.us.freebsd.org
+}
+define host {
+	use		generic-host
+	host_name	ftp6.us.freebsd.org
+	address		ftp6.us.freebsd.org
+	alias		ftp6.us.freebsd.org
+}
+define host {
+	use		generic-host
+	host_name	ftp7.us.freebsd.org
+	address		ftp7.us.freebsd.org
+	alias		ftp7.us.freebsd.org
+}
+define host {
+	use		generic-host
+	host_name	ftp8.us.freebsd.org
+	address		ftp8.us.freebsd.org
+	alias		ftp8.us.freebsd.org
+}
+define host {
+	use		generic-host
+	host_name	ftp9.us.freebsd.org
+	address		ftp9.us.freebsd.org
+	alias		ftp9.us.freebsd.org
+}
+define host {
+	use		generic-host
+	host_name	ftp10.us.freebsd.org
+	address		ftp10.us.freebsd.org
+	alias		ftp10.us.freebsd.org
+}
+define host {
+	use		generic-host
+	host_name	ftp11.us.freebsd.org
+	address		ftp11.us.freebsd.org
+	alias		ftp11.us.freebsd.org
+}
+define host {
+	use		generic-host
+	host_name	ftp.za.freebsd.org
+	address		ftp.za.freebsd.org
+	alias		ftp.za.freebsd.org
+}
+define host {
+	use		generic-host
+	host_name	www1.am.freebsd.org
+	address		www1.am.freebsd.org
+	alias		www1.am.freebsd.org
+}
+define host {
+	use		generic-host
+	host_name	www.ar.freebsd.org
+	address		www.ar.freebsd.org
+	alias		www.ar.freebsd.org
+}
+define host {
+	use		generic-host
+	host_name	www.at.freebsd.org
+	address		www.at.freebsd.org
+	alias		www.at.freebsd.org
+}
+define host {
+	use		generic-host
+	host_name	www.au.freebsd.org
+	address		www.au.freebsd.org
+	alias		www.au.freebsd.org
+}
+define host {
+	use		generic-host
+	host_name	www1.au.freebsd.org
+	address		www1.au.freebsd.org
+	alias		www1.au.freebsd.org
+}
+define host {
+	use		generic-host
+	host_name	www2.au.freebsd.org
+	address		www2.au.freebsd.org
+	alias		www2.au.freebsd.org
+}
+define host {
+	use		generic-host
+	host_name	www3.au.freebsd.org
+	address		www3.au.freebsd.org
+	alias		www3.au.freebsd.org
+}
+define host {
+	use		generic-host
+	host_name	www4.au.freebsd.org
+	address		www4.au.freebsd.org
+	alias		www4.au.freebsd.org
+}
+define host {
+	use		generic-host
+	host_name	www5.au.freebsd.org
+	address		www5.au.freebsd.org
+	alias		www5.au.freebsd.org
+}
+define host {
+	use		generic-host
+	host_name	www6.au.freebsd.org
+	address		www6.au.freebsd.org
+	alias		www6.au.freebsd.org
+}
+define host {
+	use		generic-host
+	host_name	www7.au.freebsd.org
+	address		www7.au.freebsd.org
+	alias		www7.au.freebsd.org
+}
+define host {
+	use		generic-host
+	host_name	www.bg.freebsd.org
+	address		www.bg.freebsd.org
+	alias		www.bg.freebsd.org
+}
+define host {
+	use		generic-host
+	host_name	www.br.freebsd.org
+	address		www.br.freebsd.org
+	alias		www.br.freebsd.org
+}
+define host {
+	use		generic-host
+	host_name	www.ca.freebsd.org
+	address		www.ca.freebsd.org
+	alias		www.ca.freebsd.org
+}
+define host {
+	use		generic-host
+	host_name	www1.ca.freebsd.org
+	address		www1.ca.freebsd.org
+	alias		www1.ca.freebsd.org
+}
+define host {
+	use		generic-host
+	host_name	www2.ca.freebsd.org
+	address		www2.ca.freebsd.org
+	alias		www2.ca.freebsd.org
+}
+define host {
+	use		generic-host
+	host_name	www.ch.freebsd.org
+	address		www.ch.freebsd.org
+	alias		www.ch.freebsd.org
+}
+define host {
+	use		generic-host
+	host_name	www1.ch.freebsd.org
+	address		www1.ch.freebsd.org
+	alias		www1.ch.freebsd.org
+}
+define host {
+	use		generic-host
+	host_name	www2.ch.freebsd.org
+	address		www2.ch.freebsd.org
+	alias		www2.ch.freebsd.org
+}
+define host {
+	use		generic-host
+	host_name	www.cn.freebsd.org
+	address		www.cn.freebsd.org
+	alias		www.cn.freebsd.org
+}
+define host {
+	use		generic-host
+	host_name	www1.cr.freebsd.org
+	address		www1.cr.freebsd.org
+	alias		www1.cr.freebsd.org
+}
+define host {
+	use		generic-host
+	host_name	www.cz.freebsd.org
+	address		www.cz.freebsd.org
+	alias		www.cz.freebsd.org
+}
+define host {
+	use		generic-host
+	host_name	www.de.freebsd.org
+	address		www.de.freebsd.org
+	alias		www.de.freebsd.org
+}
+define host {
+	use		generic-host
+	host_name	www1.de.freebsd.org
+	address		www1.de.freebsd.org
+	alias		www1.de.freebsd.org
+}
+define host {
+	use		generic-host
+	host_name	www2.de.freebsd.org
+	address		www2.de.freebsd.org
+	alias		www2.de.freebsd.org
+}
+define host {
+	use		generic-host
+	host_name	www.dk.freebsd.org
+	address		www.dk.freebsd.org
+	alias		www.dk.freebsd.org
+}
+define host {
+	use		generic-host
+	host_name	www.ee.freebsd.org
+	address		www.ee.freebsd.org
+	alias		www.ee.freebsd.org
+}
+define host {
+	use		generic-host
+	host_name	www.es.freebsd.org
+	address		www.es.freebsd.org
+	alias		www.es.freebsd.org
+}
+define host {
+	use		generic-host
+	host_name	www.fi.freebsd.org
+	address		www.fi.freebsd.org
+	alias		www.fi.freebsd.org
+}
+define host {
+	use		generic-host
+	host_name	www.fr.freebsd.org
+	address		www.fr.freebsd.org
+	alias		www.fr.freebsd.org
+}
+define host {
+	use		generic-host
+	host_name	www.gr.freebsd.org
+	address		www.gr.freebsd.org
+	alias		www.gr.freebsd.org
+}
+define host {
+	use		generic-host
+	host_name	www1.gr.freebsd.org
+	address		www1.gr.freebsd.org
+	alias		www1.gr.freebsd.org
+}
+define host {
+	use		generic-host
+	host_name	www.hk.freebsd.org
+	address		www.hk.freebsd.org
+	alias		www.hk.freebsd.org
+}
+define host {
+	use		generic-host
+	host_name	www1.hk.freebsd.org
+	address		www1.hk.freebsd.org
+	alias		www1.hk.freebsd.org
+}
+define host {
+	use		generic-host
+	host_name	www2.hk.freebsd.org
+	address		www2.hk.freebsd.org
+	alias		www2.hk.freebsd.org
+}
+define host {
+	use		generic-host
+	host_name	www3.hk.freebsd.org
+	address		www3.hk.freebsd.org
+	alias		www3.hk.freebsd.org
+}
+define host {
+	use		generic-host
+	host_name	www4.hk.freebsd.org
+	address		www4.hk.freebsd.org
+	alias		www4.hk.freebsd.org
+}
+define host {
+	use		generic-host
+	host_name	www5.hk.freebsd.org
+	address		www5.hk.freebsd.org
+	alias		www5.hk.freebsd.org
+}
+define host {
+	use		generic-host
+	host_name	www6.hk.freebsd.org
+	address		www6.hk.freebsd.org
+	alias		www6.hk.freebsd.org
+}
+define host {
+	use		generic-host
+	host_name	www7.hk.freebsd.org
+	address		www7.hk.freebsd.org
+	alias		www7.hk.freebsd.org
+}
+define host {
+	use		generic-host
+	host_name	www8.hk.freebsd.org
+	address		www8.hk.freebsd.org
+	alias		www8.hk.freebsd.org
+}
+define host {
+	use		generic-host
+	host_name	www9.hk.freebsd.org
+	address		www9.hk.freebsd.org
+	alias		www9.hk.freebsd.org
+}
+define host {
+	use		generic-host
+	host_name	www10.hk.freebsd.org
+	address		www10.hk.freebsd.org
+	alias		www10.hk.freebsd.org
+}
+define host {
+	use		generic-host
+	host_name	www11.hk.freebsd.org
+	address		www11.hk.freebsd.org
+	alias		www11.hk.freebsd.org
+}
+define host {
+	use		generic-host
+	host_name	www.hu.freebsd.org
+	address		www.hu.freebsd.org
+	alias		www.hu.freebsd.org
+}
+define host {
+	use		generic-host
+	host_name	www.id.freebsd.org
+	address		www.id.freebsd.org
+	alias		www.id.freebsd.org
+}
+define host {
+	use		generic-host
+	host_name	www.ie.freebsd.org
+	address		www.ie.freebsd.org
+	alias		www.ie.freebsd.org
+}
+define host {
+	use		generic-host
+	host_name	www.is.freebsd.org
+	address		www.is.freebsd.org
+	alias		www.is.freebsd.org
+}
+define host {
+	use		generic-host
+	host_name	www1.is.freebsd.org
+	address		www1.is.freebsd.org
+	alias		www1.is.freebsd.org
+}
+define host {
+	use		generic-host
+	host_name	www.it.freebsd.org
+	address		www.it.freebsd.org
+	alias		www.it.freebsd.org
+}
+define host {
+	use		generic-host
+	host_name	www.jp.freebsd.org
+	address		www.jp.freebsd.org
+	alias		www.jp.freebsd.org
+}
+define host {
+	use		generic-host
+	host_name	www.kg.freebsd.org
+	address		www.kg.freebsd.org
+	alias		www.kg.freebsd.org
+}
+define host {
+	use		generic-host
+	host_name	www.kr.freebsd.org
+	address		www.kr.freebsd.org
+	alias		www.kr.freebsd.org
+}
+define host {
+	use		generic-host
+	host_name	www.kw.freebsd.org
+	address		www.kw.freebsd.org
+	alias		www.kw.freebsd.org
+}
+define host {
+	use		generic-host
+	host_name	www.lt.freebsd.org
+	address		www.lt.freebsd.org
+	alias		www.lt.freebsd.org
+}
+define host {
+	use		generic-host
+	host_name	www.lv.freebsd.org
+	address		www.lv.freebsd.org
+	alias		www.lv.freebsd.org
+}
+define host {
+	use		generic-host
+	host_name	www.nl.freebsd.org
+	address		www.nl.freebsd.org
+	alias		www.nl.freebsd.org
+}
+define host {
+	use		generic-host
+	host_name	www.no.freebsd.org
+	address		www.no.freebsd.org
+	alias		www.no.freebsd.org
+}
+define host {
+	use		generic-host
+	host_name	www.nz.freebsd.org
+	address		www.nz.freebsd.org
+	alias		www.nz.freebsd.org
+}
+define host {
+	use		generic-host
+	host_name	www.ph.freebsd.org
+	address		www.ph.freebsd.org
+	alias		www.ph.freebsd.org
+}
+define host {
+	use		generic-host
+	host_name	www.pl.freebsd.org
+	address		www.pl.freebsd.org
+	alias		www.pl.freebsd.org
+}
+define host {
+	use		generic-host
+	host_name	www1.pt.freebsd.org
+	address		www1.pt.freebsd.org
+	alias		www1.pt.freebsd.org
+}
+define host {
+	use		generic-host
+	host_name	www.ro.freebsd.org
+	address		www.ro.freebsd.org
+	alias		www.ro.freebsd.org
+}
+define host {
+	use		generic-host
+	host_name	www1.ro.freebsd.org
+	address		www1.ro.freebsd.org
+	alias		www1.ro.freebsd.org
+}
+define host {
+	use		generic-host
+	host_name	www2.ro.freebsd.org
+	address		www2.ro.freebsd.org
+	alias		www2.ro.freebsd.org
+}
+define host {
+	use		generic-host
+	host_name	www3.ro.freebsd.org
+	address		www3.ro.freebsd.org
+	alias		www3.ro.freebsd.org
+}
+define host {
+	use		generic-host
+	host_name	www.ru.freebsd.org
+	address		www.ru.freebsd.org
+	alias		www.ru.freebsd.org
+}
+define host {
+	use		generic-host
+	host_name	www1.ru.freebsd.org
+	address		www1.ru.freebsd.org
+	alias		www1.ru.freebsd.org
+}
+define host {
+	use		generic-host
+	host_name	www2.ru.freebsd.org
+	address		www2.ru.freebsd.org
+	alias		www2.ru.freebsd.org
+}
+define host {
+	use		generic-host
+	host_name	www3.ru.freebsd.org
+	address		www3.ru.freebsd.org
+	alias		www3.ru.freebsd.org
+}
+define host {
+	use		generic-host
+	host_name	www4.ru.freebsd.org
+	address		www4.ru.freebsd.org
+	alias		www4.ru.freebsd.org
+}
+define host {
+	use		generic-host
+	host_name	www5.ru.freebsd.org
+	address		www5.ru.freebsd.org
+	alias		www5.ru.freebsd.org
+}
+define host {
+	use		generic-host
+	host_name	www.se.freebsd.org
+	address		www.se.freebsd.org
+	alias		www.se.freebsd.org
+}
+define host {
+	use		generic-host
+	host_name	www.sg.freebsd.org
+	address		www.sg.freebsd.org
+	alias		www.sg.freebsd.org
+}
+define host {
+	use		generic-host
+	host_name	www1.sg.freebsd.org
+	address		www1.sg.freebsd.org
+	alias		www1.sg.freebsd.org
+}
+define host {
+	use		generic-host
+	host_name	www2.sg.freebsd.org
+	address		www2.sg.freebsd.org
+	alias		www2.sg.freebsd.org
+}
+define host {
+	use		generic-host
+	host_name	www3.sg.freebsd.org
+	address		www3.sg.freebsd.org
+	alias		www3.sg.freebsd.org
+}
+define host {
+	use		generic-host
+	host_name	www4.sg.freebsd.org
+	address		www4.sg.freebsd.org
+	alias		www4.sg.freebsd.org
+}
+define host {
+	use		generic-host
+	host_name	www5.sg.freebsd.org
+	address		www5.sg.freebsd.org
+	alias		www5.sg.freebsd.org
+}
+define host {
+	use		generic-host
+	host_name	www6.sg.freebsd.org
+	address		www6.sg.freebsd.org
+	alias		www6.sg.freebsd.org
+}
+define host {
+	use		generic-host
+	host_name	www7.sg.freebsd.org
+	address		www7.sg.freebsd.org
+	alias		www7.sg.freebsd.org
+}
+define host {
+	use		generic-host
+	host_name	www8.sg.freebsd.org
+	address		www8.sg.freebsd.org
+	alias		www8.sg.freebsd.org
+}
+define host {
+	use		generic-host
+	host_name	www9.sg.freebsd.org
+	address		www9.sg.freebsd.org
+	alias		www9.sg.freebsd.org
+}
+define host {
+	use		generic-host
+	host_name	www10.sg.freebsd.org
+	address		www10.sg.freebsd.org
+	alias		www10.sg.freebsd.org
+}
+define host {
+	use		generic-host
+	host_name	www11.sg.freebsd.org
+	address		www11.sg.freebsd.org
+	alias		www11.sg.freebsd.org
+}
+define host {
+	use		generic-host
+	host_name	www.si.freebsd.org
+	address		www.si.freebsd.org
+	alias		www.si.freebsd.org
+}
+define host {
+	use		generic-host
+	host_name	www.sk.freebsd.org
+	address		www.sk.freebsd.org
+	alias		www.sk.freebsd.org
+}
+define host {
+	use		generic-host
+	host_name	www1.sk.freebsd.org
+	address		www1.sk.freebsd.org
+	alias		www1.sk.freebsd.org
+}
+define host {
+	use		generic-host
+	host_name	www.th.freebsd.org
+	address		www.th.freebsd.org
+	alias		www.th.freebsd.org
+}
+define host {
+	use		generic-host
+	host_name	www1.th.freebsd.org
+	address		www1.th.freebsd.org
+	alias		www1.th.freebsd.org
+}
+define host {
+	use		generic-host
+	host_name	www.tr.freebsd.org
+	address		www.tr.freebsd.org
+	alias		www.tr.freebsd.org
+}
+define host {
+	use		generic-host
+	host_name	www.tw.freebsd.org
+	address		www.tw.freebsd.org
+	alias		www.tw.freebsd.org
+}
+define host {
+	use		generic-host
+	host_name	www1.tw.freebsd.org
+	address		www1.tw.freebsd.org
+	alias		www1.tw.freebsd.org
+}
+define host {
+	use		generic-host
+	host_name	www2.tw.freebsd.org
+	address		www2.tw.freebsd.org
+	alias		www2.tw.freebsd.org
+}
+define host {
+	use		generic-host
+	host_name	www3.tw.freebsd.org
+	address		www3.tw.freebsd.org
+	alias		www3.tw.freebsd.org
+}
+define host {
+	use		generic-host
+	host_name	www4.tw.freebsd.org
+	address		www4.tw.freebsd.org
+	alias		www4.tw.freebsd.org
+}
+define host {
+	use		generic-host
+	host_name	www5.tw.freebsd.org
+	address		www5.tw.freebsd.org
+	alias		www5.tw.freebsd.org
+}
+define host {
+	use		generic-host
+	host_name	www6.tw.freebsd.org
+	address		www6.tw.freebsd.org
+	alias		www6.tw.freebsd.org
+}
+define host {
+	use		generic-host
+	host_name	www7.tw.freebsd.org
+	address		www7.tw.freebsd.org
+	alias		www7.tw.freebsd.org
+}
+define host {
+	use		generic-host
+	host_name	www.ua.freebsd.org
+	address		www.ua.freebsd.org
+	alias		www.ua.freebsd.org
+}
+define host {
+	use		generic-host
+	host_name	www1.ua.freebsd.org
+	address		www1.ua.freebsd.org
+	alias		www1.ua.freebsd.org
+}
+define host {
+	use		generic-host
+	host_name	www2.ua.freebsd.org
+	address		www2.ua.freebsd.org
+	alias		www2.ua.freebsd.org
+}
+define host {
+	use		generic-host
+	host_name	www.uk.freebsd.org
+	address		www.uk.freebsd.org
+	alias		www.uk.freebsd.org
+}
+define host {
+	use		generic-host
+	host_name	www1.uk.freebsd.org
+	address		www1.uk.freebsd.org
+	alias		www1.uk.freebsd.org
+}
+define host {
+	use		generic-host
+	host_name	www2.uk.freebsd.org
+	address		www2.uk.freebsd.org
+	alias		www2.uk.freebsd.org
+}
+define host {
+	use		generic-host
+	host_name	www3.uk.freebsd.org
+	address		www3.uk.freebsd.org
+	alias		www3.uk.freebsd.org
+}
+define host {
+	use		generic-host
+	host_name	www4.uk.freebsd.org
+	address		www4.uk.freebsd.org
+	alias		www4.uk.freebsd.org
+}
+define host {
+	use		generic-host
+	host_name	www.za.freebsd.org
+	address		www.za.freebsd.org
+	alias		www.za.freebsd.org
+}
+define host {
+	use		generic-host
+	host_name	cvsup1.am.freebsd.org
+	address		cvsup1.am.freebsd.org
+	alias		cvsup1.am.freebsd.org
+}
+define host {
+	use		generic-host
+	host_name	cvsup.ar.freebsd.org
+	address		cvsup.ar.freebsd.org
+	alias		cvsup.ar.freebsd.org
+}
+define host {
+	use		generic-host
+	host_name	cvsup.at.freebsd.org
+	address		cvsup.at.freebsd.org
+	alias		cvsup.at.freebsd.org
+}
+define host {
+	use		generic-host
+	host_name	cvsup.au.freebsd.org
+	address		cvsup.au.freebsd.org
+	alias		cvsup.au.freebsd.org
+}
+define host {
+	use		generic-host
+	host_name	cvsup.bg.freebsd.org
+	address		cvsup.bg.freebsd.org
+	alias		cvsup.bg.freebsd.org
+}
+define host {
+	use		generic-host
+	host_name	cvsup.br.freebsd.org
+	address		cvsup.br.freebsd.org
+	alias		cvsup.br.freebsd.org
+}
+define host {
+	use		generic-host
+	host_name	cvsup.ca.freebsd.org
+	address		cvsup.ca.freebsd.org
+	alias		cvsup.ca.freebsd.org
+}
+define host {
+	use		generic-host
+	host_name	cvsup1.ca.freebsd.org
+	address		cvsup1.ca.freebsd.org
+	alias		cvsup1.ca.freebsd.org
+}
+define host {
+	use		generic-host
+	host_name	cvsup2.ca.freebsd.org
+	address		cvsup2.ca.freebsd.org
+	alias		cvsup2.ca.freebsd.org
+}
+define host {
+	use		generic-host
+	host_name	cvsup3.ca.freebsd.org
+	address		cvsup3.ca.freebsd.org
+	alias		cvsup3.ca.freebsd.org
+}
+define host {
+	use		generic-host
+	host_name	cvsup.ch.freebsd.org
+	address		cvsup.ch.freebsd.org
+	alias		cvsup.ch.freebsd.org
+}
+define host {
+	use		generic-host
+	host_name	cvsup.cn.freebsd.org
+	address		cvsup.cn.freebsd.org
+	alias		cvsup.cn.freebsd.org
+}
+define host {
+	use		generic-host
+	host_name	cvsup1.cr.freebsd.org
+	address		cvsup1.cr.freebsd.org
+	alias		cvsup1.cr.freebsd.org
+}
+define host {
+	use		generic-host
+	host_name	cvsup.cz.freebsd.org
+	address		cvsup.cz.freebsd.org
+	alias		cvsup.cz.freebsd.org
+}
+define host {
+	use		generic-host
+	host_name	cvsup.de.freebsd.org
+	address		cvsup.de.freebsd.org
+	alias		cvsup.de.freebsd.org
+}
+define host {
+	use		generic-host
+	host_name	cvsup1.de.freebsd.org
+	address		cvsup1.de.freebsd.org
+	alias		cvsup1.de.freebsd.org
+}
+define host {
+	use		generic-host
+	host_name	cvsup2.de.freebsd.org
+	address		cvsup2.de.freebsd.org
+	alias		cvsup2.de.freebsd.org
+}
+define host {
+	use		generic-host
+	host_name	cvsup3.de.freebsd.org
+	address		cvsup3.de.freebsd.org
+	alias		cvsup3.de.freebsd.org
+}
+define host {
+	use		generic-host
+	host_name	cvsup4.de.freebsd.org
+	address		cvsup4.de.freebsd.org
+	alias		cvsup4.de.freebsd.org
+}
+define host {
+	use		generic-host
+	host_name	cvsup5.de.freebsd.org
+	address		cvsup5.de.freebsd.org
+	alias		cvsup5.de.freebsd.org
+}
+define host {
+	use		generic-host
+	host_name	cvsup6.de.freebsd.org
+	address		cvsup6.de.freebsd.org
+	alias		cvsup6.de.freebsd.org
+}
+define host {
+	use		generic-host
+	host_name	cvsup7.de.freebsd.org
+	address		cvsup7.de.freebsd.org
+	alias		cvsup7.de.freebsd.org
+}
+define host {
+	use		generic-host
+	host_name	cvsup8.de.freebsd.org
+	address		cvsup8.de.freebsd.org
+	alias		cvsup8.de.freebsd.org
+}
+define host {
+	use		generic-host
+	host_name	cvsup.dk.freebsd.org
+	address		cvsup.dk.freebsd.org
+	alias		cvsup.dk.freebsd.org
+}
+define host {
+	use		generic-host
+	host_name	cvsup.ee.freebsd.org
+	address		cvsup.ee.freebsd.org
+	alias		cvsup.ee.freebsd.org
+}
+define host {
+	use		generic-host
+	host_name	cvsup.es.freebsd.org
+	address		cvsup.es.freebsd.org
+	alias		cvsup.es.freebsd.org
+}
+define host {
+	use		generic-host
+	host_name	cvsup.fi.freebsd.org
+	address		cvsup.fi.freebsd.org
+	alias		cvsup.fi.freebsd.org
+}
+define host {
+	use		generic-host
+	host_name	cvsup.fr.freebsd.org
+	address		cvsup.fr.freebsd.org
+	alias		cvsup.fr.freebsd.org
+}
+define host {
+	use		generic-host
+	host_name	cvsup.gr.freebsd.org
+	address		cvsup.gr.freebsd.org
+	alias		cvsup.gr.freebsd.org
+}
+define host {
+	use		generic-host
+	host_name	cvsup1.gr.freebsd.org
+	address		cvsup1.gr.freebsd.org
+	alias		cvsup1.gr.freebsd.org
+}
+define host {
+	use		generic-host
+	host_name	cvsup2.gr.freebsd.org
+	address		cvsup2.gr.freebsd.org
+	alias		cvsup2.gr.freebsd.org
+}
+define host {
+	use		generic-host
+	host_name	cvsup.hk.freebsd.org
+	address		cvsup.hk.freebsd.org
+	alias		cvsup.hk.freebsd.org
+}
+define host {
+	use		generic-host
+	host_name	cvsup1.hk.freebsd.org
+	address		cvsup1.hk.freebsd.org
+	alias		cvsup1.hk.freebsd.org
+}
+define host {
+	use		generic-host
+	host_name	cvsup2.hk.freebsd.org
+	address		cvsup2.hk.freebsd.org
+	alias		cvsup2.hk.freebsd.org
+}
+define host {
+	use		generic-host
+	host_name	cvsup3.hk.freebsd.org
+	address		cvsup3.hk.freebsd.org
+	alias		cvsup3.hk.freebsd.org
+}
+define host {
+	use		generic-host
+	host_name	cvsup4.hk.freebsd.org
+	address		cvsup4.hk.freebsd.org
+	alias		cvsup4.hk.freebsd.org
+}
+define host {
+	use		generic-host
+	host_name	cvsup5.hk.freebsd.org
+	address		cvsup5.hk.freebsd.org
+	alias		cvsup5.hk.freebsd.org
+}
+define host {
+	use		generic-host
+	host_name	cvsup6.hk.freebsd.org
+	address		cvsup6.hk.freebsd.org
+	alias		cvsup6.hk.freebsd.org
+}
+define host {
+	use		generic-host
+	host_name	cvsup7.hk.freebsd.org
+	address		cvsup7.hk.freebsd.org
+	alias		cvsup7.hk.freebsd.org
+}
+define host {
+	use		generic-host
+	host_name	cvsup8.hk.freebsd.org
+	address		cvsup8.hk.freebsd.org
+	alias		cvsup8.hk.freebsd.org
+}
+define host {
+	use		generic-host
+	host_name	cvsup9.hk.freebsd.org
+	address		cvsup9.hk.freebsd.org
+	alias		cvsup9.hk.freebsd.org
+}
+define host {
+	use		generic-host
+	host_name	cvsup10.hk.freebsd.org
+	address		cvsup10.hk.freebsd.org
+	alias		cvsup10.hk.freebsd.org
+}
+define host {
+	use		generic-host
+	host_name	cvsup11.hk.freebsd.org
+	address		cvsup11.hk.freebsd.org
+	alias		cvsup11.hk.freebsd.org
+}
+define host {
+	use		generic-host
+	host_name	cvsup.hu.freebsd.org
+	address		cvsup.hu.freebsd.org
+	alias		cvsup.hu.freebsd.org
+}
+define host {
+	use		generic-host
+	host_name	cvsup.id.freebsd.org
+	address		cvsup.id.freebsd.org
+	alias		cvsup.id.freebsd.org
+}
+define host {
+	use		generic-host
+	host_name	cvsup.ie.freebsd.org
+	address		cvsup.ie.freebsd.org
+	alias		cvsup.ie.freebsd.org
+}
+define host {
+	use		generic-host
+	host_name	cvsup.il.freebsd.org
+	address		cvsup.il.freebsd.org
+	alias		cvsup.il.freebsd.org
+}
+define host {
+	use		generic-host
+	host_name	cvsup.is.freebsd.org
+	address		cvsup.is.freebsd.org
+	alias		cvsup.is.freebsd.org
+}
+define host {
+	use		generic-host
+	host_name	cvsup1.is.freebsd.org
+	address		cvsup1.is.freebsd.org
+	alias		cvsup1.is.freebsd.org
+}
+define host {
+	use		generic-host
+	host_name	cvsup.it.freebsd.org
+	address		cvsup.it.freebsd.org
+	alias		cvsup.it.freebsd.org
+}
+define host {
+	use		generic-host
+	host_name	cvsup.jp.freebsd.org
+	address		cvsup.jp.freebsd.org
+	alias		cvsup.jp.freebsd.org
+}
+define host {
+	use		generic-host
+	host_name	cvsup.kg.freebsd.org
+	address		cvsup.kg.freebsd.org
+	alias		cvsup.kg.freebsd.org
+}
+define host {
+	use		generic-host
+	host_name	cvsup.kr.freebsd.org
+	address		cvsup.kr.freebsd.org
+	alias		cvsup.kr.freebsd.org
+}
+define host {
+	use		generic-host
+	host_name	cvsup1.kw.freebsd.org
+	address		cvsup1.kw.freebsd.org
+	alias		cvsup1.kw.freebsd.org
+}
+define host {
+	use		generic-host
+	host_name	cvsup.lt.freebsd.org
+	address		cvsup.lt.freebsd.org
+	alias		cvsup.lt.freebsd.org
+}
+define host {
+	use		generic-host
+	host_name	cvsup1.lt.freebsd.org
+	address		cvsup1.lt.freebsd.org
+	alias		cvsup1.lt.freebsd.org
+}
+define host {
+	use		generic-host
+	host_name	cvsup2.lt.freebsd.org
+	address		cvsup2.lt.freebsd.org
+	alias		cvsup2.lt.freebsd.org
+}
+define host {
+	use		generic-host
+	host_name	cvsup3.lt.freebsd.org
+	address		cvsup3.lt.freebsd.org
+	alias		cvsup3.lt.freebsd.org
+}
+define host {
+	use		generic-host
+	host_name	cvsup.lv.freebsd.org
+	address		cvsup.lv.freebsd.org
+	alias		cvsup.lv.freebsd.org
+}
+define host {
+	use		generic-host
+	host_name	cvsup.nl.freebsd.org
+	address		cvsup.nl.freebsd.org
+	alias		cvsup.nl.freebsd.org
+}
+define host {
+	use		generic-host
+	host_name	cvsup.no.freebsd.org
+	address		cvsup.no.freebsd.org
+	alias		cvsup.no.freebsd.org
+}
+define host {
+	use		generic-host
+	host_name	cvsup.nz.freebsd.org
+	address		cvsup.nz.freebsd.org
+	alias		cvsup.nz.freebsd.org
+}
+define host {
+	use		generic-host
+	host_name	cvsup1.ph.freebsd.org
+	address		cvsup1.ph.freebsd.org
+	alias		cvsup1.ph.freebsd.org
+}
+define host {
+	use		generic-host
+	host_name	cvsup.pl.freebsd.org
+	address		cvsup.pl.freebsd.org
+	alias		cvsup.pl.freebsd.org
+}
+define host {
+	use		generic-host
+	host_name	cvsup1.pl.freebsd.org
+	address		cvsup1.pl.freebsd.org
+	alias		cvsup1.pl.freebsd.org
+}
+define host {
+	use		generic-host
+	host_name	cvsup2.pl.freebsd.org
+	address		cvsup2.pl.freebsd.org
+	alias		cvsup2.pl.freebsd.org
+}
+define host {
+	use		generic-host
+	host_name	cvsup3.pl.freebsd.org
+	address		cvsup3.pl.freebsd.org
+	alias		cvsup3.pl.freebsd.org
+}
+define host {
+	use		generic-host
+	host_name	cvsup.pt.freebsd.org
+	address		cvsup.pt.freebsd.org
+	alias		cvsup.pt.freebsd.org
+}
+define host {
+	use		generic-host
+	host_name	cvsup.ro.freebsd.org
+	address		cvsup.ro.freebsd.org
+	alias		cvsup.ro.freebsd.org
+}
+define host {
+	use		generic-host
+	host_name	cvsup1.ro.freebsd.org
+	address		cvsup1.ro.freebsd.org
+	alias		cvsup1.ro.freebsd.org
+}
+define host {
+	use		generic-host
+	host_name	cvsup2.ro.freebsd.org
+	address		cvsup2.ro.freebsd.org
+	alias		cvsup2.ro.freebsd.org
+}
+define host {
+	use		generic-host
+	host_name	cvsup3.ro.freebsd.org
+	address		cvsup3.ro.freebsd.org
+	alias		cvsup3.ro.freebsd.org
+}
+define host {
+	use		generic-host
+	host_name	cvsup.ru.freebsd.org
+	address		cvsup.ru.freebsd.org
+	alias		cvsup.ru.freebsd.org
+}
+define host {
+	use		generic-host
+	host_name	cvsup1.ru.freebsd.org
+	address		cvsup1.ru.freebsd.org
+	alias		cvsup1.ru.freebsd.org
+}
+define host {
+	use		generic-host
+	host_name	cvsup2.ru.freebsd.org
+	address		cvsup2.ru.freebsd.org
+	alias		cvsup2.ru.freebsd.org
+}
+define host {
+	use		generic-host
+	host_name	cvsup3.ru.freebsd.org
+	address		cvsup3.ru.freebsd.org
+	alias		cvsup3.ru.freebsd.org
+}
+define host {
+	use		generic-host
+	host_name	cvsup4.ru.freebsd.org
+	address		cvsup4.ru.freebsd.org
+	alias		cvsup4.ru.freebsd.org
+}
+define host {
+	use		generic-host
+	host_name	cvsup5.ru.freebsd.org
+	address		cvsup5.ru.freebsd.org
+	alias		cvsup5.ru.freebsd.org
+}
+define host {
+	use		generic-host
+	host_name	cvsup6.ru.freebsd.org
+	address		cvsup6.ru.freebsd.org
+	alias		cvsup6.ru.freebsd.org
+}
+define host {
+	use		generic-host
+	host_name	cvsup7.ru.freebsd.org
+	address		cvsup7.ru.freebsd.org
+	alias		cvsup7.ru.freebsd.org
+}
+define host {
+	use		generic-host
+	host_name	cvsup.se.freebsd.org
+	address		cvsup.se.freebsd.org
+	alias		cvsup.se.freebsd.org
+}
+define host {
+	use		generic-host
+	host_name	cvsup.sg.freebsd.org
+	address		cvsup.sg.freebsd.org
+	alias		cvsup.sg.freebsd.org
+}
+define host {
+	use		generic-host
+	host_name	cvsup1.sg.freebsd.org
+	address		cvsup1.sg.freebsd.org
+	alias		cvsup1.sg.freebsd.org
+}
+define host {
+	use		generic-host
+	host_name	cvsup2.sg.freebsd.org
+	address		cvsup2.sg.freebsd.org
+	alias		cvsup2.sg.freebsd.org
+}
+define host {
+	use		generic-host
+	host_name	cvsup3.sg.freebsd.org
+	address		cvsup3.sg.freebsd.org
+	alias		cvsup3.sg.freebsd.org
+}
+define host {
+	use		generic-host
+	host_name	cvsup4.sg.freebsd.org
+	address		cvsup4.sg.freebsd.org
+	alias		cvsup4.sg.freebsd.org
+}
+define host {
+	use		generic-host
+	host_name	cvsup5.sg.freebsd.org
+	address		cvsup5.sg.freebsd.org
+	alias		cvsup5.sg.freebsd.org
+}
+define host {
+	use		generic-host
+	host_name	cvsup6.sg.freebsd.org
+	address		cvsup6.sg.freebsd.org
+	alias		cvsup6.sg.freebsd.org
+}
+define host {
+	use		generic-host
+	host_name	cvsup7.sg.freebsd.org
+	address		cvsup7.sg.freebsd.org
+	alias		cvsup7.sg.freebsd.org
+}
+define host {
+	use		generic-host
+	host_name	cvsup8.sg.freebsd.org
+	address		cvsup8.sg.freebsd.org
+	alias		cvsup8.sg.freebsd.org
+}
+define host {
+	use		generic-host
+	host_name	cvsup9.sg.freebsd.org
+	address		cvsup9.sg.freebsd.org
+	alias		cvsup9.sg.freebsd.org
+}
+define host {
+	use		generic-host
+	host_name	cvsup10.sg.freebsd.org
+	address		cvsup10.sg.freebsd.org
+	alias		cvsup10.sg.freebsd.org
+}
+define host {
+	use		generic-host
+	host_name	cvsup11.sg.freebsd.org
+	address		cvsup11.sg.freebsd.org
+	alias		cvsup11.sg.freebsd.org
+}
+define host {
+	use		generic-host
+	host_name	cvsup.si.freebsd.org
+	address		cvsup.si.freebsd.org
+	alias		cvsup.si.freebsd.org
+}
+define host {
+	use		generic-host
+	host_name	cvsup.sk.freebsd.org
+	address		cvsup.sk.freebsd.org
+	alias		cvsup.sk.freebsd.org
+}
+define host {
+	use		generic-host
+	host_name	cvsup.th.freebsd.org
+	address		cvsup.th.freebsd.org
+	alias		cvsup.th.freebsd.org
+}
+define host {
+	use		generic-host
+	host_name	cvsup1.th.freebsd.org
+	address		cvsup1.th.freebsd.org
+	alias		cvsup1.th.freebsd.org
+}
+define host {
+	use		generic-host
+	host_name	cvsup.tr.freebsd.org
+	address		cvsup.tr.freebsd.org
+	alias		cvsup.tr.freebsd.org
+}
+define host {
+	use		generic-host
+	host_name	cvsup.tw.freebsd.org
+	address		cvsup.tw.freebsd.org
+	alias		cvsup.tw.freebsd.org
+}
+define host {
+	use		generic-host
+	host_name	cvsup1.tw.freebsd.org
+	address		cvsup1.tw.freebsd.org
+	alias		cvsup1.tw.freebsd.org
+}
+define host {
+	use		generic-host
+	host_name	cvsup2.tw.freebsd.org
+	address		cvsup2.tw.freebsd.org
+	alias		cvsup2.tw.freebsd.org
+}
+define host {
+	use		generic-host
+	host_name	cvsup3.tw.freebsd.org
+	address		cvsup3.tw.freebsd.org
+	alias		cvsup3.tw.freebsd.org
+}
+define host {
+	use		generic-host
+	host_name	cvsup4.tw.freebsd.org
+	address		cvsup4.tw.freebsd.org
+	alias		cvsup4.tw.freebsd.org
+}
+define host {
+	use		generic-host
+	host_name	cvsup.ua.freebsd.org
+	address		cvsup.ua.freebsd.org
+	alias		cvsup.ua.freebsd.org
+}
+define host {
+	use		generic-host
+	host_name	cvsup.uk.freebsd.org
+	address		cvsup.uk.freebsd.org
+	alias		cvsup.uk.freebsd.org
+}
+define host {
+	use		generic-host
+	host_name	cvsup.us.freebsd.org
+	address		cvsup.us.freebsd.org
+	alias		cvsup.us.freebsd.org
+}
+define host {
+	use		generic-host
+	host_name	cvsup1.us.freebsd.org
+	address		cvsup1.us.freebsd.org
+	alias		cvsup1.us.freebsd.org
+}
+define host {
+	use		generic-host
+	host_name	cvsup2.us.freebsd.org
+	address		cvsup2.us.freebsd.org
+	alias		cvsup2.us.freebsd.org
+}
+define host {
+	use		generic-host
+	host_name	cvsup3.us.freebsd.org
+	address		cvsup3.us.freebsd.org
+	alias		cvsup3.us.freebsd.org
+}
+define host {
+	use		generic-host
+	host_name	cvsup4.us.freebsd.org
+	address		cvsup4.us.freebsd.org
+	alias		cvsup4.us.freebsd.org
+}
+define host {
+	use		generic-host
+	host_name	cvsup5.us.freebsd.org
+	address		cvsup5.us.freebsd.org
+	alias		cvsup5.us.freebsd.org
+}
+define host {
+	use		generic-host
+	host_name	cvsup6.us.freebsd.org
+	address		cvsup6.us.freebsd.org
+	alias		cvsup6.us.freebsd.org
+}
+define host {
+	use		generic-host
+	host_name	cvsup7.us.freebsd.org
+	address		cvsup7.us.freebsd.org
+	alias		cvsup7.us.freebsd.org
+}
+define host {
+	use		generic-host
+	host_name	cvsup8.us.freebsd.org
+	address		cvsup8.us.freebsd.org
+	alias		cvsup8.us.freebsd.org
+}
+define host {
+	use		generic-host
+	host_name	cvsup9.us.freebsd.org
+	address		cvsup9.us.freebsd.org
+	alias		cvsup9.us.freebsd.org
+}
+define host {
+	use		generic-host
+	host_name	cvsup10.us.freebsd.org
+	address		cvsup10.us.freebsd.org
+	alias		cvsup10.us.freebsd.org
+}
+define host {
+	use		generic-host
+	host_name	cvsup11.us.freebsd.org
+	address		cvsup11.us.freebsd.org
+	alias		cvsup11.us.freebsd.org
+}
+define host {
+	use		generic-host
+	host_name	cvsup.za.freebsd.org
+	address		cvsup.za.freebsd.org
+	alias		cvsup.za.freebsd.org
+}

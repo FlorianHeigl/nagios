@@ -1,0 +1,6 @@
+define host {
+	use		generic-host
+	host_name	lalahost
+	address		lalahost
+	alias		lalahost
+}
