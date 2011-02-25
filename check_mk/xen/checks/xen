@@ -3,6 +3,17 @@
 # unsupported check_mk plugin for xen
 # Florian Heigl <fh@mathias-kettner.de>
 
+# agent output:
+# <<<xen>>>
+# vm cent-tsnag running
+# vm xen01 running
+# vm xen03 running
+# mem 8183 5132
+
+# note 1: a vm will only show if the vm is still visible in xenstore!
+# note 2: "mem" is reserved for future used.
+
+
 def inventory_xen_vms(checkname, info):
     return [ (("%s" % line[1] ), None) for line in info if line[0] == "vm" ]
 
@@ -10,18 +21,26 @@ def inventory_xen_vms(checkname, info):
 def check_xen_vms(item, params, info):
     for line in info:
         xentype = line[0]
-        vmname = line[1]
-        status = line[2]
-        if vmname == item:
- 	    if status == "running":
-	        return (0, "OK - VM %s status is %s" % (item, status))
-            elif status == "paused":
-                return (1, "WARN - VM %s status is %s" % (item, status))
-            elif status == "crashed":
-                return (2, "CRIT - VM %s status is %s" % (item, status))
-            else:
-                return (3, "UNKNOWN - VM %s status unknown" % (item, status))
-            return
+        if xentype == "vm":
+            vmname = line[1]
+	    status = line[2]
+	    if vmname == item:
+            # the vm was in the agent output, let's check it's status.
+	        if status == "running":
+	  	    return (0, "OK - VM %s status is %s" % (item, status))
+		elif status == "paused":
+		    return (1, "WARN - VM %s status is %s" % (item, status))
+		elif status == "crashed":
+		    return (2, "CRIT - VM %s status is %s" % (item, status))
+		elif status == "down":
+		    return (2, "CRIT - VM %s status is %s" % (item, status))
+		else:
+		    return (3, "UNKNOWN - VM %s status unknown" % (item, status))
+    # if we didn't return yet, the vm is no longer in the agent output.
+    # happens if the vm was started using xm create or destroyed later on.
+    status = "down"
+    return (2, "CRIT - VM %s status is %s" % (item, status))
+
 
 check_info['xen.vms'] = \
         (check_xen_vms, "VM %s", 0, inventory_xen_vms)
