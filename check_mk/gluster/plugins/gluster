@@ -1,0 +1,51 @@
+#!/bin/bash
+
+
+
+gluster_msg()
+{
+echo '<<<gluster>>>'
+}
+
+check_gluster()
+{
+# check gluster status. return off, enabled, running, not running
+GLUSSTAT=disabled 
+# return 0 if gluster is set to start in the current runlevel.
+chkconfig glusterd && GLUSSTAT=enabled
+gluster_msg
+
+# now check if there is a running glusterd, collect return code because 
+# there might be evil timeouts if it's NOT running.
+if pgrep glusterd 1>/dev/null; then
+    GLUSSTAT=running
+    return 0
+  else
+    GLUSSTAT=broken
+    return 1
+fi
+export GLUSSTAT
+return 2
+}
+
+
+peerprobe()
+{
+# interesting lines of output:
+# Hostname: 192.168.100.106
+# State: Peer Rejected (Connected)
+gluster peer status | egrep '(^Hostname|^State)'
+
+}
+
+volstatus()
+{
+
+gluster volume info all | grep -e "^Volume N" -e "^Type" -e "Status"
+
+
+}
+
+check_gluster &&
+peerprobe 
+volstatus
