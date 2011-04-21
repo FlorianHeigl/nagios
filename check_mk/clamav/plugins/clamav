@@ -1,0 +1,18 @@
+#!/bin/bash
+#
+# call freshclam and ask it about the current update status
+# this is non-ideal as there's no damn reason to check 1x/minute
+
+# main.cld is up to date 
+# daily.cld is up to date 
+# bytecode.cld is up to date 
+
+freshclam_update_interval = 7200
+
+#if `which freshclam >/dev/null 2&1`; then
+#    echo '<<<clamav>>>'
+#    freshclam -c 12 --stdout | grep cld | cut -f1 -d\(
+#fi
+
+# grep /var/log/clamav/freshclam.log for an entry less than XX secs old?
+# contains the same "is up to date" message.

@@ -1,0 +1,25 @@
+#!/bin/sh
+
+
+
+# do we have gluster on the system?
+
+
+
+# do we have a running glusterd?
+
+
+
+# then we could now ask it for status info
+
+# for peers 
+# 	"one peer down"
+
+# for volumes 
+#       "volume is not started"
+#       "volume is healing"
+
+
+
+
+
