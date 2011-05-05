@@ -67,4 +67,4 @@ def check_xen_mem(checkname, params, info):
     return (3, "UNKNOWN")
 
 
-check_info['xen.mem'] = (check_xen_mem, "Host Memory used", 0, inventory_xen_mem)
+check_info['xen.mem'] = (check_xen_mem, "Host Memory used", 1, inventory_xen_mem)
