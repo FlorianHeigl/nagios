@@ -47,18 +47,24 @@ def check_xen_mem(checkname, params, info):
         if line[0] == "mem":
             mem_total  = int(line[1])
             mem_free   = int(line[2])
-            mem_dom0   = int(line[3])
+            mem_dom0   = saveint(line[3])
             mem_used   = mem_total - int(line[2])
             perc_used  = mem_used * 100 / float(mem_total) 
 
             infotext   = (" - %d MB used (this is %.2f%% of usable RAM size)" % (mem_used, perc_used))
-            # add here: also plot line for warn, crit and dom0 memory usage (agent doesnt send data yet)
+
+            # add here: also plot line for warn, crit and dom0 memory usage (agent plugin sends data now)
             perfdata   = [('ramused', str (mem_used) + 'MB', '', '', 0, mem_total)]
  
+            # actually check something here ;)
             if perc_used > crit:
                 return (2, "CRIT" + infotext + "!!", perfdata)
             elif perc_used > warn:
                 return (1, "WARN" + infotext + "!", perfdata)
+     
+            # one more elif here, check if dom0 memory usage is >30% of total mem, then we probably caught 
+            # someone using dom0 balloon. This can corrupt the xen heap and backend drivers. go to warning.
+            
             else:
                 return (0, "OK" + infotext, perfdata)
             
