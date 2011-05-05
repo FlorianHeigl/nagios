@@ -7,8 +7,6 @@
 # check for vm "autostart" symlink / file ( match /etc/xen/auto/*domain for ordered startups)
 # might also be in /etc/default/xendomains
 # 
-# add support for citrix kills xen
-# 
 # grab performance data from xentop and turn it into perfdata
 # grab tmem & balloon statistics ( will need OVM3 beta to test)
 # 
@@ -32,96 +30,32 @@ fi
 return 1
 }   
 
-find_mgmt()
-{
-# virsh is quite faster than xm list (direct xenstore access versus python?)
-# so we'll use it if it is around.
-if which virsh 1>/dev/null
-  then
-     mgmt=virsh
-     export mgmt 
-     return 0 
-fi
-
-if which /usr/sbin/xm 1>/dev/null
-   then
-     mgmt=xm
-     export mgmt 
-     return 0 
-fi
-
-# OVM support can go here, but OVM will be ok if we just ask Xen.
-# so this is more a topic for checking the daemons while we're here.
-
-# XenServer / XCI support goes here.
-
-}
-
 setup_cmds()
 {
 
 running_vms=error
 
-case $mgmt in
+vmlist=$(xm list --state=running | grep -v ^Name)
+running_vms=$( echo "$vmlist" | egrep -v '(Name|Domain-0)'  | awk '{print $1}' )
+# get the total and max memory
+XMEM=$(xm info | egrep '(total_m|free_m)' | awk '{print $3}')
+# add in dom0 ram
+XMEM="$XMEM $(echo "$vmlist" | awk '/Domain-0/ {print $3}')"
 
-  xm)
-     running_vms="$( xm list --state=running | egrep -v '(Name|Domain-0)'  | awk '{print $1}' )"
-     XMEM="$(xm info | egrep '(total_m|free_m)' | awk '{print $3}' | tr "\n" " ")"
-     if [ $? != 0 ]
- 	then 
-	   echo "xend is broken"
-	   exit 1
-     fi
-     export XMEM
-#     echo settings $(grep '(enable-dom0-ballooning' /etc/xen/xend-config.sxp)
-# either one of these could be active
-#     grep -v ^# /etc/xen/xend-config.sxp | awk '/xend-relocatio.*server/ {print "settings "$1" "$2}'
+if [ $? != 0 ]; then 
+    echo "xend is broken"
+    exit 1
+fi
 
-
-
-# 	add vm config search etc. etc. here
-
-  ;;
-  virsh)
-     running_vms="$( virsh list | egrep -v '(Domain-0|--|\ Id|^$)' | awk '{print $2}' )"
-     XMEM="$(xm info | egrep '(total_m|free_m)' | awk '{print $3}' | tr "\n" " ")"
-     if [ $? != 0 ]
- 	then 
-	   echo "xend is broken"
-	   exit 1
-     fi
-     export XMEM
-#     echo settings $(grep '(enable-dom0-ballooning' /etc/xen/xend-config.sxp)
-# either one of these could be active
-#     grep -v ^# /etc/xen/xend-config.sxp | awk '/xend-relocatio.*server/ {print "settings "$1" "$2}'
-
-# 	add vm config search etc. etc. here
-
-  ;;
-  xenserver)
-     echo "GUID juggling is not yet supported"  
-  ;;
-
-  *)
-	echo "not yet supported"
-	return 1
-  ;;
-
-esac
-export running_vms mem
+export running_vms XMEM
 
 }
 
 look_for_xen &&
-find_mgmt 
-if [ $? != 0 ]
-    then 
-        exit 0
-fi
 setup_cmds &&
 echo "<<<xen>>>" &&
 for vm in $running_vms
   do 
    echo "vm $vm running"
 done
-echo "mem $XMEM"
+echo mem $XMEM

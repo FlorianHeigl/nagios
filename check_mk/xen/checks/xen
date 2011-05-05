@@ -44,6 +44,7 @@ def check_xen_mem(checkname, params, info):
         if line[0] == "mem":
             mem_total  = int(line[1])
             mem_free   = int(line[2])
+            mem_dom0   = int(line[3])
             mem_used   = mem_total - int(line[2])
             perc_used  = mem_used * 100 / float(mem_total) 
             warn       = params[0]
