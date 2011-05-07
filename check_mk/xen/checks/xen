@@ -11,9 +11,7 @@ def inventory_xen_vms(checkname, info):
 
 def check_xen_vms(item, params, info):
     for line in info:
-        xentype = line[0]
-        vmname = line[1]
-        status = line[2]
+        xentype, vmname, status = line
         if vmname == item:
  	    if status == "running":
 	        return (0, "OK - VM %s status is %s" % (item, status))
@@ -23,7 +21,6 @@ def check_xen_vms(item, params, info):
                 return (2, "CRIT - VM %s status is %s" % (item, status))
             else:
                 return (3, "UNKNOWN - VM %s status unknown" % (item, status))
-            return
 
 check_info['xen.vms'] = \
         (check_xen_vms, "VM %s", 0, inventory_xen_vms)
@@ -64,9 +61,12 @@ def check_xen_mem(checkname, params, info):
      
             # one more elif here, check if dom0 memory usage is >30% of total mem, then we probably caught 
             # someone using dom0 balloon. This can corrupt the xen heap and backend drivers. go to warning.
+            # unfortunately that way one error can shadow the other
             
-            else:
+            elif perc_used < warn:
                 return (0, "OK" + infotext, perfdata)
+            else:
+                return (3, "UNKNOWN - invalid data from agent")
             
 
     return (3, "UNKNOWN")
