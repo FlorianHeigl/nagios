@@ -11,16 +11,19 @@ def inventory_xen_vms(checkname, info):
 
 def check_xen_vms(item, params, info):
     for line in info:
-        xentype, vmname, status = line
-        if vmname == item:
- 	    if status == "running":
-	        return (0, "OK - VM %s status is %s" % (item, status))
-            elif status == "paused":
-                return (1, "WARN - VM %s status is %s" % (item, status))
-            elif status == "crashed":
-                return (2, "CRIT - VM %s status is %s" % (item, status))
-            else:
-                return (3, "UNKNOWN - VM %s status unknown" % (item, status))
+        xentype = line[0]
+        if xentype == "vm":
+            xentype, vmname, status = line
+            if vmname == item:
+         	    if status == "running":
+        	        return (0, "OK - VM %s status is %s" % (item, status))
+                    elif status == "paused":
+                        return (1, "WARN - VM %s status is %s" % (item, status))
+                    elif status == "crashed":
+                        return (2, "CRIT - VM %s status is %s" % (item, status))
+                    else:
+                        return (3, "UNKNOWN - VM %s status unknown" % (item, status))
+    return (2, "CRIT - VM %s status is down or deleted" % item)
 
 
 check_info['xen.vms'] = \
