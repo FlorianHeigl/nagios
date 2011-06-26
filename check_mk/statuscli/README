@@ -1,0 +1,38 @@
+README for cmkstatus
+This is *not* a check plugin for check_mk!
+
+
+I needed a script that can be run from the console to query the status 
+of the server I'm logged into.
+This had been one of the 4 pillars in the system health check scripts
+I drafted at $oldjob. It semt obvious to me that such a thing would be 
+very helpful, but the team that was supposed to build them never finished :)
+
+The idea kept nagging me though and ujsing Check_MK this has become a whole lot
+easier.
+
+You can simply run 
+"cmkstatus" and will get a list of all non-OK services on the system you're 
+logged into.
+
+This is achieved using command restricted SSH keys on the nagios host and a 
+miniature wrapper script for deciding if you want the full status or only the 
+issues.
+
+Full status would be informative to see a system overview or to verify that
+the system component you care about is actually being monitored, whereas the
+"default" will just let you know about any issue.
+
+Things to consider:
+caching: Especially with buggy IPMI bmc modules the check_mk agent run time can
+be around 30s.
+I recommend to use the cached results for quicker query times, but the user 
+needs to be aware he'll be seeing a 60s-old result.
+People may use the caching agent already so there's no 100% safety you see a 
+fresh result anyway.
+
+promt: It might be fun to hack this into your bash prompt, would need to 
+have something that updates the status in the background and just displays
+(OK) by default and this would change to (3CRI5WA) in case something breaks.
+
+I think this might be an interesting idea - let the server talk to the admin.
