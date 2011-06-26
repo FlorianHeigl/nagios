@@ -1,0 +1,14 @@
+#!/bin/bash
+
+# This plugin prints LVM Lvol status 
+# PV / VG status can be added later.
+
+# run a vgdisplay:
+# don't stop if it can't lock the lvm config (not possible to disable locking)
+# only print the VGs in activation mode "active"
+
+
+echo '<<<lvm2>>>'
+vgdisplay -v -A --ignorelockingfailure | \
+    grep -e "LV Name" -e "LV Write Access"  \
+         -e "LV snapshot status" -e "Allocated to snapshot"
