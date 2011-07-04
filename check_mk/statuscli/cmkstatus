@@ -1,0 +1,44 @@
+#!/bin/sh
+#
+# cmkstatus -  
+# A script that can query the cmk status of the host you're currently messing
+# with. 
+# This little admin helper either just gives a total or when called -v it will
+# also give a list of affected services.
+# 
+# Author - Florian Heigl <fh@mathias-kettner.de>
+
+# Step 1: 
+# Configure the script via the below config file
+if [ -r /etc/check_mk/cmkstatus.conf ]; then 
+    . /etc/check_mk/cmkstatus.conf
+else 
+# otherwise it will fall back to my test settings.
+    NAGIOSSERVER=192.168.10.135
+    SITENAME=wartungsfenster
+fi
+
+# Step 2:
+# Set up SSH command restricted access for your host.
+# You need to generate a ssh key just for this purpose ( see id_dsa below )
+# You need to add the public key to the authorized_keys file for your nagios
+# user.
+# Minimum example - need to add options like no-pty
+# command=". ~/.profile ; check_mk --cache -v dtc.wartungsfenster.de" ssh-dss AAAA[...snip...]
+# 
+
+
+STATUS=$(ssh -i /root/.ssh/id_dsa_cmk -nq -o PreferredAuthentication=PublicKey $SITENAME@${NAGIOSSERVER} 2>&1 | grep -v version)
+
+TOTAL=$(echo "$STATUS" | wc -l)
+#OK=$(echo "$STATUS"   | grep -c OK)
+NONOK=$(echo "$STATUS" | grep -v -e OK -e "Counter wrapped")
+NUMERR=$(echo "$NONOK" | wc -l)
+
+echo "(${NUMERR}/${TOTAL}) ERR/TOTAL"
+if [ "X-v" = "X${1}" ]  && [ $NUMERR -ge 1 ]; then
+    echo "Problem Services:
+$( echo "$NONOK" | cut -f1 -d\- )"
+fi 
+
+# thats it.
