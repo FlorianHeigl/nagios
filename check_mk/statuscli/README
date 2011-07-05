@@ -36,3 +36,15 @@ have something that updates the status in the background and just displays
 (OK) by default and this would change to (3CRI5WA) in case something breaks.
 
 I think this might be an interesting idea - let the server talk to the admin.
+
+
+
+note to self after initial commit:
+ARGHLIDIOT!
+
+Modify to give return codes!
+
+0 - all services OK  - no output
+1 - connection error - no output? (linux noobs might fall for that :)
+127 remote end issue - no output?
+11-13 wrn cri unk    - output nagios errors
