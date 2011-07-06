@@ -48,3 +48,48 @@ Modify to give return codes!
 1 - connection error - no output? (linux noobs might fall for that :)
 127 remote end issue - no output?
 11-13 wrn cri unk    - output nagios errors
+
+or just 0,1,2,3, 127 255?
+
+
+note about the downtime option:
+one big issue with (automatic) downtimes is they'll always be too short, or too
+long, but rarely ever give the length you need.
+
+interesting options:
+on regular shutdown / reboot trigger a downtime (K01)
+on on successful startup, cancel the downtime(s) (S99)
+
+notes about timing:
+system startup does not mean the system is really up, yet
+reasons are 
+    clusters
+    application startup in background
+    bad startup scripts
+    bad dependencies
+
+the duration of a reboot can be estimated. not exactly, but well enough.
+factors:
+    cpu count
+        multiplies hw init time for ECC checks, vrm calibration, microcode ...
+    amount on memory in gigabytes
+        i.e. HP-UX wastes about 1 min per GB of primary swap size for kernel
+        relocation so it can crash dump
+    hw init:
+        virtualized system
+        pc based server or big iron:
+        pc servers only do very limited hw checks
+        number of pci devices
+    storage:
+        number of disk devices & paths (linux: 1min per 100)
+        (some linux core dev is convinced that multithreaded hw init is impossible because he didnt get it right)
+        connected to a/p disk arrays (+1-10min)
+        OS in use Linux vs. Commercial Unix (+5min linux)
+        san based cluster locking (+2min)
+    
+
+personally, i think it evens out and the key question is just:
+large system (15min) or tiny system (8min) or vm(3min)
+cluster (+4min)
+sysv init or launchd (-3min)
+add 50% of downtime as flex downtime.
