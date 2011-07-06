@@ -3,8 +3,9 @@
 # cmkstatus -  
 # A script that can query the cmk status of the host you're currently messing
 # with. 
-# This little admin helper either just gives a total or when called -v it will
-# also give a list of affected services.
+# This little admin helper exits with return code 0 if there's no errors
+# on the host. It can be instructed to output total and errors.
+# It should be able to trigger a recheck
 # 
 # Author - Florian Heigl <fh@mathias-kettner.de>
 
@@ -28,17 +29,28 @@ fi
 # 
 
 
-STATUS=$(ssh -i /root/.ssh/id_dsa_cmk -nq -o PreferredAuthentication=PublicKey $SITENAME@${NAGIOSSERVER} 2>&1 | grep -v version)
+#STATUS=$(ssh -i /root/.ssh/id_dsa_cmk -nq -o PreferredAuthentications=PublicKey $SITENAME@${NAGIOSSERVER} 2>&1 | grep -v version)
+STATUS=$(ssh -i ~/.ssh/id_dsa -nq $SITENAME@${NAGIOSSERVER} 2>&1 | grep -v version)
 
 TOTAL=$(echo "$STATUS" | wc -l)
 #OK=$(echo "$STATUS"   | grep -c OK)
 NONOK=$(echo "$STATUS" | grep -v -e OK -e "Counter wrapped")
 NUMERR=$(echo "$NONOK" | wc -l)
 
-echo "(${NUMERR}/${TOTAL}) ERR/TOTAL"
-if [ "X-v" = "X${1}" ]  && [ $NUMERR -ge 1 ]; then
-    echo "Problem Services:
-$( echo "$NONOK" | cut -f1 -d\- )"
+if [ ${NUMERR} = 0 ]; then
+    # silenty exit
+    exit 0 
+fi
+
+if [ "Xtotal" = "X${1}" ]; then
+    # this only works if we got errors. 
+    echo "(${NUMERR}/${TOTAL}) ERR/TOTAL"
 fi 
+
+if [ "Xshow" = "X${1}" ]  && [ $NUMERR -ge 1 ]; then
+     echo "$NONOK" | cut -f1 -d\- 
+fi 
+exit 1
+
 
 # thats it.
