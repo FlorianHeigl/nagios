@@ -1,0 +1,23 @@
+title: Check status of Xen virtual machines
+agents: tcp
+author: Florian Heigl <fh@mathias-kettner.de>
+license: GPL
+distribution: addon
+description: 
+  The check matches the list of running virtual machines against the list of virtual machines on the host. 
+It will return "OK" if a VM is running, CRIT if a VM is in the states "c- crashed" or "s - shutdown" or UNKWOWN if the VM is not found in the xm list output. 
+The check supports only the old-style "xm" command set, support for "xl" as used in Xen4.2 and up will be added. Citrix XenServer will not be supported.
+
+
+Explanation: Since Xen VMs may be destroyed upon shutdown, it is not possible to safely determine if a VM is missing or shut down, unless you are using the "correct" settings (i.e. start the VM using xm new + xm start instead of xm create).
+Unfortunately xm start is broken on debian, whereas CentOS/RHEL are missing the important --state option to xm list. On SUSE and Oracle VM you should find a working xen-tools setup and can use xm new to create VMs.
+
+
+parameters:
+  as of now the check has no parameters. A parameter xenvm_allowed_states could be added. Let me know if you need it.
+
+inventory:
+  the check plugin generates one service per VM that is visible on the host at inventory time.
+
+perfdata: 
+ The check does not generate performance data. It is planned to display the CPU and RAM usage per domU, but this is not possible without support from xen-devel.

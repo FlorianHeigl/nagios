@@ -1,0 +1,20 @@
+title: Check memory usage on Xen hosts
+agents: tcp
+author: Florian Heigl <fh@mathias-kettner.de>
+license: GPL
+distribution: addon
+description: 
+  The check queries the memory under hypervisor control on Xen hosts and will display the amounts used by dom0, used in total, and the total memory of the host.
+
+
+
+parameters:
+  check_xen_mem_default_levels(warn_pct,crit_pct) the percentages of total memory on the host that should become the warning and critical thresholds.
+
+inventory:
+  The check generates one service only for the memory of the host.
+
+
+perfdata: 
+ It generates perfdata for all Xen memory counters.
+ The performance data for dom0 memory usage is broken.

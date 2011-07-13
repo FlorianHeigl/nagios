@@ -1,0 +1,73 @@
+#!/bin/sh
+
+# cmkstatus (rewrite)
+# a multitool for unix admin access to check_mk/livestatus
+
+
+# arguments:
+# 
+# none
+# show     [all|errors]
+# recheck
+# downtime [start|end]
+
+
+
+
+# remove the connection to cmk/livestatus from the main script
+# ssh is used while testing, but other methods may be better in the long run
+transport()
+{
+if ! [ -z $mode ]; then
+    mode=$1
+fi
+
+# define right pieces for connecting to server
+case $mode in 
+    ssh)
+        # find/verify pubkey
+        CMD="ssh"
+        OPTIONS="-q -n"
+        QUERY=""
+    ;;
+    *) 
+        echo "Transport $mode not yet added"
+    ;;
+esac
+
+# build connection command for later use
+callout='$CMD $OPTIONS $QUERY'
+export callout
+
+}
+
+# fetch the result from server
+query()
+{
+# ask server, take the result into one multiline
+SERVERSAYS="$(callout)"
+RC=$?
+
+# handle connection failure
+
+
+}
+
+# output formatting
+process()
+{
+# this is used to unify the output, not to build a filtered view from it
+query
+
+}
+
+# call this from option handler
+filters()
+{
+filters=""
+
+}
+
+
+# main
+echo "sorry, currently all code removed"
