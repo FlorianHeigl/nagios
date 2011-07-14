@@ -30,34 +30,87 @@ case $mode in
         OPTIONS="-q -n"
         QUERY=""
     ;;
+    fake)
+        CMD="getfakeresult"
+        OPTIONS=""
+        QUERY=""
+    ;;
     *) 
         echo "Transport $mode not yet added"
     ;;
 esac
 
-# build connection command for later use
-callout='$CMD $OPTIONS $QUERY'
-export callout
 
+# build connection command for later use
+callout="$CMD $OPTIONS $QUERY"
+export callout
 }
+
+
+getfakeresult()
+{
+echo "Check_mk version 2011.06.23
+CPU load             OK - 15min Load 0.07 at 2 CPUs                          
+CPU utilization      OK - user: 27.4%, system: 7.1%, wait: 0.5%              
+CUPS Queue Estonia   OK - is idle. enabled since Mon Jul 11 12:34:26 2011 - Jobs: 0
+Counter wrapped, not handled by check, ignoring this check result: diskstat.sda.write: Counter initialization
+Counter wrapped, not handled by check, ignoring this check result: diskstat.sdb.write: Counter initialization
+Kernel Context Switches OK - 3618/s in last 47 secs                             
+Kernel Major Page Faults OK - 0/s in last 47 secs                                
+Kernel Process Creations OK - 29/s in last 47 secs                               
+Memory used          OK - 2.13 GB RAM+SWAP used (this is 56.7% of RAM size)  
+Mount options of /   CRIT - mount options are barrier=1,commit=600,data=ordered,errors=remount-ro,relatime,rw, expected are barrier=1,data=ordered,errors=remount-ro,relatime,rw
+Mount options of /boot CRIT - mount options are barrier=1,commit=600,data=ordered,relatime,rw, expected are barrier=1,data=ordered,relatime,rw
+Mount options of /home CRIT - mount options are barrier=1,commit=600,data=ordered,relatime,rw, expected are barrier=1,data=ordered,relatime,rw
+Mount options of /media/7C8C-1470 OK - mount options are codepage=cp437,dmask=0077,errors=remount-ro,flush,fmask=0022,gid=1000,iocharset=iso8859-1,nodev,nosuid,relatime,rw,shortname=mixed,showexec,uid=1000,utf8
+Mount options of /tmp CRIT - mount options are barrier=1,commit=600,data=ordered,relatime,rw, expected are barrier=1,data=ordered,relatime,rw
+Mount options of /usr CRIT - mount options are barrier=1,commit=600,data=ordered,relatime,rw, expected are barrier=1,data=ordered,relatime,rw
+Mount options of /var CRIT - mount options are barrier=1,commit=600,data=ordered,relatime,rw, expected are barrier=1,data=ordered,relatime,rw
+NIC eth0 counters    OK - Receive: 0.00 MB/sec - Send: 0.00 MB/sec           
+NIC vboxnet0 counters OK - Receive: 0.00 MB/sec - Send: 0.00 MB/sec           
+NIC wlan0 counters   OK - Receive: 0.00 MB/sec - Send: 0.00 MB/sec           
+NIC wwan0 counters   UNKNOWN - NIC is not present                            
+Number of threads    OK - 567 threads                                        
+OMD klapper status   OK - all services are running                           
+OMD walks status     CRIT - site is stopped                                  
+OMD wartungsfenster status CRIT - site is stopped                                  
+Postfix Queue        OK - The mailqueue is empty                             
+TCP Connections      OK - ESTABLISHED: 4, TIME_WAIT: 6                       
+Uptime               OK - up since Thu Jul 14 09:51:39 2011 (0d 09:43:23)    
+fs_/                 OK - 32.9% used (0.30 of 0.9 GB), (levels at 80.0/90.0%), trend: 0.00B / 24 hours
+fs_/boot             OK - 10.0% used (0.09 of 0.9 GB), (levels at 80.0/90.0%), trend: 0.00B / 24 hours
+fs_/data/git         OK - 2.8% used (7.47 of 264.5 GB), (levels at 80.0/90.0%), trend: 0.00B / 24 hours
+fs_/data/home/floh   OK - 5.9% used (16.25 of 273.2 GB), (levels at 80.0/90.0%), trend: 0.00B / 24 hours
+fs_/data/isos        OK - 7.2% used (20.06 of 277.0 GB), (levels at 80.0/90.0%), trend: 0.00B / 24 hours
+fs_/data/opt         OK - 0.4% used (1.16 of 258.1 GB), (levels at 80.0/90.0%), trend: 0.00B / 24 hours
+fs_/data/svn         OK - 7.9% used (22.10 of 279.1 GB), (levels at 80.0/90.0%), trend: 0.00B / 24 hours
+fs_/home             OK - 8.2% used (0.08 of 1.0 GB), (levels at 80.0/90.0%), trend: 0.00B / 24 hours
+fs_/media/7C8C-1470  OK - 72.7% used (2.68 of 3.7 GB), (levels at 80.0/90.0%), trend: 0.00B / 24 hours
+fs_/tmp              OK - 6.9% used (0.06 of 0.9 GB), (levels at 80.0/90.0%), trend: 0.00B / 24 hours
+fs_/usr              OK - 32.0% used (3.52 of 11.0 GB), (levels at 80.0/90.0%), trend: 0.00B / 24 hours
+fs_/var              OK - 37.4% used (0.68 of 1.8 GB), (levels at 80.0/90.0%), trend: 0.00B / 24 hours
+OK - Agent version 1.1.11i1, execution time 1.6 sec|execution_time=1.567"
+}
+
 
 # fetch the result from server
 query()
 {
 # ask server, take the result into one multiline
-SERVERSAYS="$(callout)"
-RC=$?
+# and handle connection failure, too
+SERVERSAYS=`$callout` || return 1
 
-# handle connection failure
-
-
+echo $SERVERSAYS
+return 0
 }
+
 
 # output formatting
 process()
 {
 # this is used to unify the output, not to build a filtered view from it
-query
+
+(query) # | grep -v "Agent version"
 
 }
 
@@ -69,5 +122,9 @@ filters=""
 }
 
 
+#####
 # main
-echo "sorry, currently all code removed"
+
+mode=fake
+transport $mode
+process
