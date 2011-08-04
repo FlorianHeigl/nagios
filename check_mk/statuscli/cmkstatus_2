@@ -100,8 +100,20 @@ query()
 # and handle connection failure, too
 SERVERSAYS=`$callout` || return 1
 
-echo $SERVERSAYS
+echo "$SERVERSAYS"
 return 0
+}
+
+
+# call this from option handler
+filter()
+{
+#filters='grep -v "Agent version" | cut -b 1-60'
+
+#echo $@
+(query) | grep -v "Agent version" | cut -b -1-60
+
+
 }
 
 
@@ -110,16 +122,12 @@ process()
 {
 # this is used to unify the output, not to build a filtered view from it
 
-(query) # | grep -v "Agent version"
+
+filter
+#(query)  | (filter)
 
 }
 
-# call this from option handler
-filters()
-{
-filters=""
-
-}
 
 
 #####
