@@ -1,0 +1,62 @@
+#!/bin/bash
+
+# local agent part for checking xen hosts
+# this is the version for xen releases that don't have --state.
+
+# todos:
+# check daemons -> invetory 
+# check for vm "autostart" symlink / file ( match /etc/xen/auto/*domain for ordered startups)
+# might also be in /etc/default/xendomains
+# 
+# grab performance data from xentop and turn it into perfdata
+# grab tmem & balloon statistics ( will need OVM3 beta to test)
+# 
+# include remaining xen ram from xm info(!!)
+# check against /proc/xen/balloon - WARNING if dom0 balloon is enabled
+# 
+# if xend is not working, we'll go to critical regardless of other checks.
+# technically nothing needs xend - except that without it you can't migrate vm's 
+# off a broken host. so this is something we wanna know about.
+# 
+
+# hint: we could report Domain-0 to the nagios host instead of removing it.
+# that would be a function test of xend and handle empty vm lists
+
+look_for_xen()
+{
+if ps -ef | grep xend | grep -v grep 1>/dev/null || test -x /etc/init.d/xend 2>/dev/null
+  then 
+     return 0
+fi
+return 1
+}   
+
+setup_cmds()
+{
+
+running_vms=error
+
+vmlist=$(xm list | grep -v ^Name)
+running_vms=$( echo "$vmlist" | egrep -v '(Name|Domain-0)'  | awk '{print $1}' )
+# get the total and max memory
+XMEM=$(xm info | egrep '(total_m|free_m)' | awk '{print $3}')
+# add in dom0 ram
+XMEM="$XMEM $(echo "$vmlist" | awk '/Domain-0/ {print $3}')"
+
+if [ $? != 0 ]; then 
+    echo "xend is broken"
+    exit 1
+fi
+
+export running_vms XMEM
+
+}
+
+look_for_xen &&
+setup_cmds &&
+echo "<<<xen>>>" &&
+for vm in $running_vms
+  do 
+   echo "vm $vm running"
+done
+echo mem $XMEM
