@@ -3,3 +3,7 @@
 
 # Check for files in filesystem's lost+found directories
 # Ignore .files (i.e. .fsadm)
+
+# WARN if the filesystem type does support lost+found mechanism but the dir is
+# doesn't exist (noob error)
+# CRIT if files are found
