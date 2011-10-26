@@ -3,7 +3,6 @@
 # cmkstatus (rewrite)
 # a multitool for unix admin access to check_mk/livestatus
 
-
 # arguments:
 # 
 # none
@@ -12,6 +11,11 @@
 # downtime [start|end]
 
 
+# return codes:
+# tbd :)
+
+# the rewrite aims to transparently support different transports
+# or formats.
 
 
 # remove the connection to cmk/livestatus from the main script
@@ -111,7 +115,7 @@ filter()
 #filters='grep -v "Agent version" | cut -b 1-60'
 
 #echo $@
-(query) | grep -v "Agent version" | cut -b -1-60
+(query) | grep -v "Agent version" 
 
 
 }
@@ -122,8 +126,15 @@ process()
 {
 # this is used to unify the output, not to build a filtered view from it
 
+echo "$(filter)" | while read line ; do
+    if [ "$(echo "$line" | wc -c )" -ge 80 ]; then
+        line="$(echo "$line" | cut -f1 -d\, | cut -b -75)"
+    fi
+    echo "$line"
+done
+    
 
-filter
+
 #(query)  | (filter)
 
 }
