@@ -1,0 +1,5 @@
+#!/bin/sh
+
+
+# Check for files in filesystem's lost+found directories
+# Ignore .files (i.e. .fsadm)
