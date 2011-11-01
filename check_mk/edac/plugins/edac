@@ -1,0 +1,19 @@
+#!/bin/sh
+# This agent plugin is supposed to read data provided by the linux edac driver
+# Right now, the driver can read status of memory modules and pci busses.
+
+
+if [ -d /sys/devices/system/edac/mc ]; then
+    # EDAC memory driver running
+    echo '<<<edac.mem>>>'
+    # Iterate all memory controllers, print memory info and EDAC mode
+    mc in /sys/devices/system/edac/mc/* ; do for csrow in $mc/csrow* ; do echo "$csrow $(cat $csrow/{size_mb,mem_type,ce_count,ue_count,edac_mode} | tr '\n' ' ')" ; done; done
+fi
+
+test -d /sys/devices/system/edac/pci &&
+# By default, Linux does ignore PCI crc/ecc. Only do checks if the admin enabled it.
+if [ `cat /sys/devices/system/edac/pci/check_pci_errors` = 1 ]; then
+    echo '<<<edac.pci>>>'
+
+
+fi
