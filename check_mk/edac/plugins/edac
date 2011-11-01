@@ -6,6 +6,9 @@
 # The best stop for alll things EDAC is http://buttersideup.com/edacwiki/ and the edac.txt in the kernel doc.
 
 
+# EDAC memory reporting
+# Example output:
+# /sys/devices/system/edac/mc/mc0/csrow0 8192 Registered-DDR3 0 0 S4ECD4ED 
 if [ -d /sys/devices/system/edac/mc ]; then
     # EDAC memory driver running
     echo '<<<edac.mem>>>'
@@ -17,6 +20,7 @@ if [ -d /sys/devices/system/edac/mc ]; then
     done
 fi
 
+# EDAC pci error reporting
 test -d /sys/devices/system/edac/pci &&
 if [ `cat /sys/devices/system/edac/pci/check_pci_errors` = 1 ]; then
     # By default, Linux does ignore PCI crc/ecc. Only do checks if the admin enabled it.
