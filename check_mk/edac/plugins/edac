@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 # 
 # This agent plugin for Check_MK / Nagios is supposed to read data provided by the linux EDAC driver
 # Right now, the driver can read status of memory modules and pci busses and we'll try to monitor that.
