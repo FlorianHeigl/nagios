@@ -10,7 +10,11 @@ if [ -d /sys/devices/system/edac/mc ]; then
     # EDAC memory driver running
     echo '<<<edac.mem>>>'
     # Iterate all memory controllers, print memory info and EDAC mode. Maybe later add DIMM label support.
-    mc in /sys/devices/system/edac/mc/* ; do for csrow in $mc/csrow* ; do echo "$csrow $(cat $csrow/{size_mb,mem_type,ce_count,ue_count,edac_mode} | tr '\n' ' ')" ; done; done
+    for mc in /sys/devices/system/edac/mc/* ; do 
+        for csrow in $mc/csrow* ; do 
+            echo "$csrow $(cat $csrow/{size_mb,mem_type,ce_count,ue_count,edac_mode} | tr '\n' ' ')" 
+        done
+    done
 fi
 
 test -d /sys/devices/system/edac/pci &&
