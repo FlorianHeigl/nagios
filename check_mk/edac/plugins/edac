@@ -8,14 +8,14 @@
 
 # EDAC memory reporting
 # Example output:
-# /sys/devices/system/edac/mc/mc0/csrow0 8192 Registered-DDR3 0 0 S4ECD4ED 
+# mc0 csrow0 8192 Registered-DDR3 0 0 S4ECD4ED 
 if [ -d /sys/devices/system/edac/mc ]; then
     # EDAC memory driver running
     echo '<<<edac.mem>>>'
     # Iterate all memory controllers, print memory info and EDAC mode. Maybe later add DIMM label support.
     for mc in /sys/devices/system/edac/mc/* ; do 
         for csrow in $mc/csrow* ; do 
-            echo "$csrow $(cat $csrow/{size_mb,mem_type,ce_count,ue_count,edac_mode} | tr '\n' ' ')" 
+            echo "$(basename $mc) $(basename $csrow) $(cat $csrow/{size_mb,mem_type,ce_count,ue_count,edac_mode} | tr '\n' ' ')" 
         done
     done
 fi
