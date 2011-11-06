@@ -25,6 +25,7 @@ test -d /sys/devices/system/edac/pci &&
 if [ `cat /sys/devices/system/edac/pci/check_pci_errors` = 1 ]; then
     # By default, Linux does ignore PCI crc/ecc. Only do checks if the admin enabled it.
     echo '<<<edac.pci>>>'
+    echo "Not yet supported"
 
 
 fi
