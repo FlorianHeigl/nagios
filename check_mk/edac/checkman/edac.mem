@@ -1,0 +1,20 @@
+title: Check Linux EDAC status for ECC memory
+agents: tcp
+author: Florian Heigl <fh@mathias-kettner.de>
+license: GPL
+distribution: addon
+description:
+  The check queries the EDAC reporting data in Linux sysfs and reports the status of installed memory modules.
+
+
+parameters:
+  This check has no parameters.
+
+
+inventory:
+  The check generates one item for each "row" on a memory controller (practically just a memory slot) on each memory controller. Opteron / Nehalem seem to have two memory controllers each. Opteron 6100 will have 4 memory slots and Nehalems 3 slots.
+
+
+perfdata:
+  The check does not generate performance data. It would be possible to add performance data for ECC error rates, if you want to track error rates on a system with very high errorr rates.
+
