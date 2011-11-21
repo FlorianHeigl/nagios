@@ -92,11 +92,20 @@ An example entry would be:
 Check_MK datasource:
 --------------------
 
+datasource_programs += []
 
+Give example using <HOST> matching and one for systems that deliver broken hostnames not used in Nagios.
+(The script names the temp files based on `hostname`
 
 
 Host Check:
 -----------
+
+Can be done using check_file_age 
+Make things right[tm] by ensuring the timeouts / check retries and stuff match the normal icmp host check
+define based on the filename in the datasource!!!
+
+./versions/1.1.11i4.mk/lib/nagios/plugins/check_file_age -w 70 -c 500 /tmp/4eb
 
 
 
