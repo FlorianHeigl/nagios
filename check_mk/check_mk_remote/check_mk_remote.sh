@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/usr/bin/ksh
 
 # (c) Wartungsfenster.de 2011
 #

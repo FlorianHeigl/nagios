@@ -1,0 +1,103 @@
+README file for check_mk_remote
+
+This is *not* a plugin for check_mk
+
+
+check_mk_remote is a helper script that is used to transfer check_mk agent outputs 
+to a central monitoring host. 
+it can be used for hosts that are completely firewalled and can never accessed from
+the monitoring server. Instead of the server connecting to them on port 6556/tcp or 
+i.e. via SSH they will send their result to the server.
+
+Setup:
+------
+
+To achieve this, you need the following adjustments:
+
+* Working transport (this README will assume scp)
+* The script check_mk_remote.sh on the monitored system.
+* a cron job on the system that calls the script. 
+* a datasource definition in your check_mk_config
+* a replacement host check that verifies the file age of the transmitted data
+
+
+
+
+SSH: 
+----
+
+
+Create a passwordless ssh key for the user running the remote script.
+In the easiest case, I think this would be just ssh-keygen -N ""
+- but this creates RSA keys of weak strength so you would be a lot better off by using
+ssh-keygen -t dsa -i ~/.ssh/id_dsa_cmkremote -f ""
+That way you also have a specific key for this (nagios) use instead of using the one 
+that your generic root account uses.
+Many people will rather use something insecure so make your own choice.
+
+After the key has been created you need to make it available to the user running 
+your Check_MK install:
+
+Use cat to print out the public key from the file mentioned in the output of ssh-keygen:
+for example: "Your public key has been saved in /root/.ssh/id_dsa_cmkremote.pub."
+
+Then head to the nagios server, and use su to switch to your nagios (or OMD site) user.
+Create a ssh directory:
+mkdir .ssh ; chmod 700 .ssh ; cd .ssh/
+touch authorized_keys ; chmod 600 authorized_keys ; vi authorized_keys
+# Now paste the authorized key from the other host and save the file.
+
+(You can also shortcut around this using ssh-copy-id in case you have opted to set a
+password for the nagios user - which you should never do)
+
+
+Now, on the monitored host, head to /etc/check_mk and create a small configuration
+file using your own nagios user and nagios hostname:
+
+echo "omduser=mysite
+cmkserver=hostname.of.server.example.com" > cmkserver.cfg
+
+With that info the remote script can now be tested:
+/usr/local/bin/check_mk_remote.sh
+If no problems occur, there will be no output.
+
+If you want to be sure, call it using
+sh -x /usr/local/bin/check_mk_remote.sh
+
+While we're at it. The scripts interpreter might need to be adjusted depending on your 
+enviroment. I think any modern shell (meaning ksh93, bash, zsh) will run it flawlessly.
+If you don't have ksh, switch it to bash.
+
+On the first ssh connection, you will have to accept the servers key, assuming that
+it really *was* your server ;) From now on the script will automatically fail if 
+that server's host key smells fishy, far better than sending your monitoring data to 
+a "friendly" visitor.
+
+
+
+CRON:
+-----
+
+
+Once that works you can set up cron:
+The cron job will also have to set up your full "PATH" environment, or you 
+add it in the script.  (Since cron, by default, never just inherits the environment of a user)
+
+An example entry would be:
+* * * * cd /tmp; PATH=/sbin:/bin:/usr/sbin:/usr/bin ; /usr/local/bin/check_mk_remote.sh
+
+
+
+
+Check_MK datasource:
+--------------------
+
+
+
+
+Host Check:
+-----------
+
+
+
+
