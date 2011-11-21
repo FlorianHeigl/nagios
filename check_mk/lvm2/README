@@ -1,0 +1,48 @@
+Nagios / Check_MK check for Linux LVM2 states.
+
+
+Why this plugin:
+
+Reason1:
+Be able to monitor LVM snapshot age.
+Linux LVM does not have a toolset that allows you the existance of outdated snapshots
+left over from aborted snapshots, or quick tracking of the leftover capacity of the 
+snapshot reserve. If the reserve is exceeded, your volume will fully block and not be usable.
+Worse comes to worse when adding the human factor that shows most people do not know how
+to calculate snapshot volume IO. I've seen cases where snapshot reservations of 5G were made
+for volumes with daily change volumes of 0.5TB.
+
+Reason2: 
+Add better LVM error detection:
+Linux LVM monitoring is very shallow when compared to the original LVM implementation 
+used by IBM or the one in HP-UX (this is the one that Systina used as reference for their LVM)
+There are the so-called LVM monitors, but these only cover some of the LVM layers, rely on
+uevent and there is not really anything happening as a result of catastrophic failures.
+From standard OS level, you cannot get a reasonable monitoring alert in case there is some 
+failure. Also, in most cases the LVM2 object states do not change when they should.
+I.e. if you remove all disks a LV will most probably never end up in an unavailable state.
+Instead the status command outputs will adjust to expose the crap that is at LVM2's userspace-
+happy core, meaning you cannot even query LVM status in some failure modes.
+
+
+
+For feature 1 the implementaion was stuck for months since the LVM toolset doesn't allow 
+querying snapshot ages and there's no way to be smart about it (short of encoding a date 
+into the name with is not helpful AT.ALL.!)
+Today I figured the very easy solution:
+
+Start with a local check that goes warn if there is a snapshot.
+Use downtimes for the time where snapshots are expected. 
+
+
+Check_mk check items would be all logical volumes on a host (can be many 100)
+Use grouping to turn into per-vg services (like ipmi)
+flag an LV red if it has a snapshot (downtimes must apply on per-item level!)
+
+Problems:
+Cloud envs might see 1000s of lv deletions per day and 100s of snapshots, so the item 
+should be the VG with all smarts being in the "black box" level and only textual message
+used to report them.
+If that is done, no extra alert will be scheduled by nagios once 2nd failure occurs.
+
+
