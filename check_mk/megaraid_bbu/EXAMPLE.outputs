@@ -1,0 +1,192 @@
+
+A missing BBU module: (no inventory)
+
+
+Adapter 0: Get BBU Status Failed.
+Adapter 0: Get BBU ChargeTime Failed.
+Adapter 0: Get BBU Capacity Info Failed.
+Adapter 0: Get BBU Status Info Failed.
+Adapter 0: Get BBU Properties Failed.
+
+A charging BBU module:
+
+
+BBU status for Adapter: 0
+ 
+BatteryType: BBU
+Voltage: 4027 mV
+Current: 124 mA
+Temperature: 24 C
+ 
+Battery State     : Operational
+ 
+BBU Firmware Status:
+ 
+  Charging Status              : Charging
+  Voltage                                 : OK
+  Temperature                             : OK
+  Learn Cycle Requested                   : No
+  Learn Cycle Active                      : No
+  Learn Cycle Status                      : OK
+  Learn Cycle Timeout                     : No
+  I2c Errors Detected                     : No
+  Battery Pack Missing                    : No
+  Battery Replacement required            : No
+  Remaining Capacity Low                  : No
+  Periodic Learn Required                 : No
+  Transparent Learn                       : No
+  No space to cache offload               : No
+  Pack is about to fail & should be replaced : No
+  Cache Offload premium feature required  : No
+  Module microcode update required        : No
+ 
+ 
+ 
+GasGuageStatus:
+  Fully Discharged        : No
+  Fully Charged           : No
+  Discharging             : No
+  Initialized             : Yes
+  Remaining Time Alarm    : No
+  Remaining Capacity Alarm: No
+  Discharge Terminated    : No
+  Over Temperature        : No
+  Charging Terminated     : No
+  Over Charged            : No
+ 
+Relative State of Charge: 96 %
+Charger Status: In Progress
+Remaining Capacity: 1556 mAh
+Full Charge Capacity: 1624 mAh
+isSOHGood: Yes
+ 
+Battery backup charge time : 0 hours
+ 
+BBU Capacity Info for Adapter: 0
+ 
+Relative State of Charge: 96 %
+Absolute State of charge: 82 %
+Remaining Capacity: 1558 mAh
+Full Charge Capacity: 1624 mAh
+Run time to empty: Battery is not being discharged
+Average time to empty: Battery is not being discharged
+Average Time to full: 47 min
+Cycle Count: 9
+Max Error = 2 %
+Remaining Capacity Alarm = 190 mAh
+Remining Time Alarm = 10 Min
+ 
+BBU Design Info for Adapter: 0
+ 
+Date of Manufacture: 09/15, 2008
+Design Capacity: 1900 mAh
+Design Voltage: 3700 mV
+Specification Info: 8000
+Serial Number: 4029
+Pack Stat Configuration: 0xe4bc
+Manufacture Name: SMP-PA
+Device Name: X848389
+Device Chemistry: LION
+Battery FRU: N/A
+ 
+Transparent Learn = 0
+App Data = 0
+ 
+BBU Properties for Adapter: 0
+ 
+Auto Learn Period: 7776000 Sec
+Next Learn time: 384565096 Sec
+Learn Delay Interval:0 Hours
+Auto-Learn Mode: Enabled
+
+
+charged BBU:
+
+BBU status for Adapter: 0
+ 
+BatteryType: BBU
+Voltage: 4056 mV
+Current: 0 mA
+Temperature: 24 C
+ 
+Battery State     : Operational
+ 
+BBU Firmware Status:
+ 
+  Charging Status              : None
+  Voltage                                 : OK
+  Temperature                             : OK
+  Learn Cycle Requested                   : No
+  Learn Cycle Active                      : No
+  Learn Cycle Status                      : OK
+  Learn Cycle Timeout                     : No
+  I2c Errors Detected                     : No
+  Battery Pack Missing                    : No
+  Battery Replacement required            : No
+  Remaining Capacity Low                  : No
+  Periodic Learn Required                 : No
+  Transparent Learn                       : No
+  No space to cache offload               : No
+  Pack is about to fail & should be replaced : No
+  Cache Offload premium feature required  : No
+  Module microcode update required        : No
+ 
+ 
+ 
+GasGuageStatus:
+  Fully Discharged        : No
+  Fully Charged           : Yes
+  Discharging             : Yes
+  Initialized             : Yes
+  Remaining Time Alarm    : No
+  Remaining Capacity Alarm: No
+  Discharge Terminated    : No
+  Over Temperature        : No
+  Charging Terminated     : No
+  Over Charged            : No
+ 
+Relative State of Charge: 100 %
+Charger Status: Complete
+Remaining Capacity: 1624 mAh
+Full Charge Capacity: 1624 mAh
+isSOHGood: Yes
+ 
+Battery backup charge time : 0 hours
+ 
+BBU Capacity Info for Adapter: 0
+ 
+Relative State of Charge: 100 %
+Absolute State of charge: 85 %
+Remaining Capacity: 1624 mAh
+Full Charge Capacity: 1624 mAh
+Run time to empty: Battery is not being discharged
+Average time to empty: Battery is not being discharged
+Average Time to full: Battery is not being charged
+Cycle Count: 9
+Max Error = 2 %
+Remaining Capacity Alarm = 190 mAh
+Remining Time Alarm = 10 Min
+ 
+BBU Design Info for Adapter: 0
+ 
+Date of Manufacture: 09/15, 2008
+Design Capacity: 1900 mAh
+Design Voltage: 3700 mV
+Specification Info: 8000
+Serial Number: 4029
+Pack Stat Configuration: 0xe48c
+Manufacture Name: SMP-PA
+Device Name: X848389
+Device Chemistry: LION
+Battery FRU: N/A
+ 
+Transparent Learn = 0
+App Data = 0
+ 
+BBU Properties for Adapter: 0
+ 
+Auto Learn Period: 7776000 Sec
+Next Learn time: 384565096 Sec
+Learn Delay Interval:0 Hours
+Auto-Learn Mode: Enabled
+
