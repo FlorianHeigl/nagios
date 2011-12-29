@@ -1,0 +1,16 @@
+#!/bin/sh
+
+# Read statistics of facebook flashcache on linux
+
+if [ -d /sys/module/flashcache ]; then
+    echo '<<<fb-flashcache>>>'
+    # Output info from device mapper:
+    # Front device, cache device and backend device, plus mode and other info.
+    dmsetup table --target flashcache
+    # Output statistics for all flashcache devices (they name them by cache+backdev here)
+    for x in /proc/flashcache/* ; do 
+        if test -d $x ; then   
+            echo $x ; cat $x/flashcache_stats $x/flashcache_errors
+        fi 
+    done
+fi

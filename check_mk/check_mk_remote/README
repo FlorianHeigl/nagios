@@ -92,10 +92,12 @@ An example entry would be:
 Check_MK datasource:
 --------------------
 
-datasource_programs += []
+MISSING: give example using <HOST> matching. The agent-side script names the temp files based on `hostname` - here are two live examples.
 
-Give example using <HOST> matching and one for systems that deliver broken hostnames not used in Nagios.
-(The script names the temp files based on `hostname`
+datasource_programs += [ 
+  ( "cat $OMD_ROOT/tmp/check_mk/cmkresult.hostA.local", [ 'server20.example.com' ]),
+  ( "cat $OMD_ROOT/tmp/check_mk/cmkresult.hostB.example.com", [ 'hostB.example.com' ]),
+]
 
 
 Host Check:
