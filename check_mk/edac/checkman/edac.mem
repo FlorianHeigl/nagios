@@ -4,7 +4,12 @@ author: Florian Heigl <fh@mathias-kettner.de>
 license: GPL
 distribution: addon
 description:
-  The check queries the EDAC reporting data in Linux sysfs and reports the status of installed memory modules.
+  The check queries the EDAC reporting data in Linux sysfs and reports the status of installed memory modules. 
+The EDAC support in Linux differs highly between different CPUs
+and distros. Opteron 6100 on CentOS6.2 is tested working, Xeon
+5600 on CentOS is not working. See the RHEL6.2 release notes for
+further information.
+
 
 
 parameters:
