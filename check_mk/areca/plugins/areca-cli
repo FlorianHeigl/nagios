@@ -1,0 +1,34 @@
+#!/bin/bash
+
+# Verify the OS found an Areca HBA
+if lsmod | grep arcmsr > /dev/null && which cli64 >/dev/null; then
+    echo '<<<areca_luns>>>'
+else
+    exit 0
+fi
+
+# Get the lun status
+cli64 vsf info | grep -v -e ^=  -e Name -e GuiErrMsg
+
+# Do not use rsf info, it's inherited from vsf's states
+# Do not use disk info, it's slow.
+
+
+
+  
+# Examples for vsf info
+#  1 ARC-1680-VOL#000 Raid Set # 000  Raid1+0   10.0GB 00/00/00   Initializing(85.2%)
+#  2 ARC-1680-VOL#001 Raid Set # 000  Raid5     15.0GB 00/00/01   Need Init
+#  1 ARC-1680-VOL#000 Raid Set # 000  Raid1+0   10.0GB 00/00/00   Normal
+#  2 ARC-1680-VOL#001 Raid Set # 000  Raid5     15.0GB 00/00/01   Initializing(45.3%)
+#  1 ARC-1680-VOL#000 Raid Set # 000  Raid1+0   10.0GB 00/00/00   Normal
+#  2 ARC-1680-VOL#001 Raid Set # 000  Raid5     15.0GB 00/00/01   Normal
+#  3 lalavol          Raid Set # 000  Raid0     13.3GB 00/00/02   Normal
+#
+#  1 ARC-1680-VOL#000 Raid Set # 000  Raid1+0   10.0GB 00/00/00   Degraded
+#  2 ARC-1680-VOL#001 Raid Set # 000  Raid5     15.0GB 00/00/01   Degraded
+#  3 lalavol          Raid Set # 000  Raid0     13.3GB 00/00/02   Failed
+#
+#  1 ARC-1680-VOL#000 Raid Set # 000  Raid1+0   10.0GB 00/00/00   Rebuilding(63.1%)
+#  2 ARC-1680-VOL#001 Raid Set # 000  Raid5     15.0GB 00/00/01   Need Rebuild
+#  3 lalavol          Raid Set # 000  Raid0     13.3GB 00/00/02   Normal
