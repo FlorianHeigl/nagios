@@ -5,25 +5,32 @@
 
 # The best stop for alll things EDAC is http://buttersideup.com/edacwiki/ and the edac.txt in the kernel doc.
 
+EDAC=false
+ 
+if [ -d /sys/devices/system/edac/mc ]; then 
+    EDAC=true
+fi
+if [ -d /sys/devices/system/edac/pci ] && [ `cat /sys/devices/system/edac/pci/check_pci_errors` = 1 ]; then
+    EDAC=true
+fi
+
+if [ $EDAC = "true" ]; then
+    echo '<<<edac>>>'
+fi
+
 
 # EDAC memory reporting
 # Example output:
 # mc0 csrow0 8192 Registered-DDR3 0 0 S4ECD4ED 
-if [ -d /sys/devices/system/edac/mc ]; then
-    # EDAC memory driver running
-    echo '<<<edac>>>'
-    # Iterate all memory controllers, print memory info and EDAC mode. Maybe later add DIMM label support.
-    for mc in /sys/devices/system/edac/mc/* ; do 
-        for csrow in $mc/csrow* ; do 
-            echo "$(basename $mc) $(basename $csrow) $(cat $csrow/{size_mb,mem_type,ce_count,ue_count,edac_mode} | tr '\n' ' ')" 
-        done
+# EDAC memory driver running
+# Iterate all memory controllers, print memory info and EDAC mode. Maybe later add DIMM label support.
+for mc in /sys/devices/system/edac/mc/* ; do 
+    test -d  $mc || break
+    for csrow in $mc/csrow* ; do 
+        echo "$(basename $mc) $(basename $csrow) $(cat $csrow/{size_mb,mem_type,ce_count,ue_count,edac_mode} | tr '\n' ' ')" 
     done
-fi
+done
 
 # EDAC pci error reporting
-#test -d /sys/devices/system/edac/pci &&
-#if [ `cat /sys/devices/system/edac/pci/check_pci_errors` = 1 ]; then
-#    # By default, Linux does ignore PCI crc/ecc. Only do checks if the admin enabled it.
-#    echo '<<<edac.pci>>>'
-#    echo "Not yet supported"
-#fi
+# By default, Linux does ignore PCI crc/ecc. Only do checks if the admin enabled it.
+#   echo "Not yet supported"
