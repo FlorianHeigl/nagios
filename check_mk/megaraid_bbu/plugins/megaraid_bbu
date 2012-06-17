@@ -1,0 +1,31 @@
+#!/bin/sh
+
+echo '<<<megaraid_bbu>>>'
+echo "BBU status for Adapter: 0
+ 
+BatteryType: BBU
+Voltage: 4027 mV
+Current: 124 mA
+Temperature: 24 C
+ 
+Battery State     : Operational
+ 
+BBU Firmware Status:
+ 
+  Charging Status              : Charging
+  Voltage                                 : OK
+  Temperature                             : OK
+  Learn Cycle Requested                   : No
+  Learn Cycle Active                      : No
+  Learn Cycle Status                      : OK
+  Learn Cycle Timeout                     : No
+  I2c Errors Detected                     : No
+  Battery Pack Missing                    : No
+  Battery Replacement required            : No
+  Remaining Capacity Low                  : No
+  Periodic Learn Required                 : No
+  Transparent Learn                       : No
+  No space to cache offload               : No
+  Pack is about to fail & should be replaced : No
+  Cache Offload premium feature required  : No
+  Module microcode update required        : No"
