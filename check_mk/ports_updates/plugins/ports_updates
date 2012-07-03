@@ -1,0 +1,20 @@
+#!/bin/sh
+
+# This plugin ran 1.5s in my VM. It can't hurt to help
+# it become faster: 
+# If you want you can configure a proxy either via 
+# HTTP_PROXY or via /usr/local/etc/portaudit.conf
+
+
+
+
+# Don't run if portaudit isn't installed.
+if ! which portaudit >/dev/null 2>&1 ; then
+    exit 0
+fi
+
+# Otherwise, show is the results.
+# Currently I only got the output for security updates, still 
+# need to find a way for the normal updates.
+echo '<<<ports.updates>>>'
+echo "secupdates: `portaudit -qa | wc -l`"
