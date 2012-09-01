@@ -1,0 +1,41 @@
+#!/usr/bin/python
+
+
+
+
+#<<<java_version:sep(124)>>>
+#/usr/bin/java|Java(TM) SE Runtime Environment (build 1.6.0_33-b03-424-11M3720)
+
+
+# Here we can configure the "base" version, change this number as new 
+# security flaws are found, and hopefully fixed.
+
+java_allowed_versions = {
+  # set to none as there's a 0day for any version at the moment.
+  "Java(TM) SE Runtime" : None 
+}
+
+
+def inventory_java_version(info):
+    inventory = []
+    for line in info:
+      # skip if this line has wrong number of parts
+      if len(line) != 2:
+          continue
+
+      jre_path, jre_version = line
+      for jre in java_allowed_versions.keys():
+          if jre.startswith("jre_version"):
+              # generate one service per installed jre
+              inventory.append(jre_path, "java_allowed_versions")
+      
+    return inventory
+        
+
+def check_java_version(item, params, info):
+     return (3, "UNKNOWN - Check not yet implemented")
+
+
+
+
+#check_info

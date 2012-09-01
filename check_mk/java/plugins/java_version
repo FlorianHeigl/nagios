@@ -1,0 +1,22 @@
+#!/bin/sh
+
+# print out java version of systems so you can run update checks
+# and enforcement against it.
+
+# Extend this list to contain the jre/jdks you want to test.
+# on many OS "smart" vendors have installed a bundled JRE that never gets
+# updated. find / -local -name jre and give them trouble.
+JAVA_HOMES="$JAVA_HOME /usr"
+
+found=no
+for JAVA_HOME in $JAVA_HOMES  ; do
+    jre="$JAVA_HOME/bin/java"
+    if [ -x "$jre" ]; then
+        if [ $found = "no" ]; then
+            echo "<<<java_version:sep(124)>>>"
+            found=yes
+        fi
+        version=`$jre -version 2>&1 | fgrep Runtime`
+        echo "${jre}|${version}"
+    fi
+done
