@@ -1,0 +1,129 @@
+#!/bin/bash
+
+
+# This shall become a post-install state machine for JeOS-like autoconfig of 
+# an OMD VM that you'll be able to install from my Cobbler server
+
+# clean up
+unalias -a
+rm /root/*{cfg,log}
+
+
+get_data_disk()
+{
+# This is expecting the described layout:
+# sda = vg00
+# sdb = swap
+# sdc = vg01
+
+data_disk="None"
+for disk in sdc vdc xvdc ; do
+    if [ -b /dev/${disk} ]; then
+        export data_disk=${disk}
+      return
+    fi
+done
+
+if [ $data_disk = "None" ]; then
+    echo "
+No data disk could be found. We tried sdc, vdc and xvdc.
+Please mount something to /opt/omd and we'll be happy."
+    exit 1
+fi
+}
+        
+
+make_vg()
+{
+if ! vgs --noheadings | grep vg01 > /dev/null;  then
+    vgcreate -s 256 vg01 /dev/$data_disk
+fi
+}
+
+
+make_lv()
+{
+lv=/dev/vg01/lvoptomd
+if ! [ -b /dev/vg01/lvoptomd ]; then
+    # we can also set this to use 100% of the size, 
+    # and iirc also "at least 10G, up to 100%"
+    lvcreate -L 10240 -n lvoptomd /dev/vg01
+fi
+export lv
+}
+
+
+# if there is no ext4 label on the FS we'll create one.
+# we can't safeguard against overwriting other fs types,
+# but we should not come to this point if the FS is mounted
+# before the script is run.
+create_fs()
+{
+if ! tune2fs -l $lv >/dev/null ; then
+    mkfs.ext4 -L /opt/omd $lv
+fi
+
+
+# Create the mountpoint if it's missing
+if ! [ -d /opt/omd ] ; then
+    mkdir -p /opt/omd
+fi
+}
+
+# this sets parameters on the created fs.
+sanitize_fs()
+{
+parms="-i 0
+-c 0
+-o journal_data_ordered
+-e panic
+-o block_validity
+-E mount_opts=commit=10
+-o discard"
+
+
+echo "$parms" | while read opt parm ; do
+    tune2fs $opt $parm $lv
+done
+}
+
+# if we don't have an fstab entry, make one
+make_fstab()
+{
+if ! grep -w /opt/omd /etc/fstab > /dev/null; then
+    cp -p /etc/fstab /etc/fstab.bck.$$
+    echo "/dev/vg01/lvoptomd /opt/omd ext4 noatime,nodiratime 0 2" >> /etc/fstab
+fi
+}
+
+
+mount_fs()
+{
+    mount /opt/omd
+    return $?
+}
+
+
+
+
+fs_mounted()
+{
+if ! grep -w /opt/omd /proc/mounts  > /dev/null ; then
+    mount_fs
+    return $?
+fi
+}
+
+
+# FIX FIX FIX maybe need to setup the repo
+get_omd_name()
+{
+omdpackage=$(yum search omd- | grep ^omd | tail -1)
+}
+
+omd_installed()
+{
+if ! rpm -qa | grep "omd-" ; then
+    yum install $omdpackage
+fi
+}
