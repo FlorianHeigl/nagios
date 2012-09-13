@@ -118,7 +118,18 @@ fi
 # FIX FIX FIX maybe need to setup the repo
 get_omd_name()
 {
-omdpackage=$(yum search omd- | grep ^omd | tail -1)
+# I don't need an extra state for this do i?
+if ! grep "http://labs.consol.de/OMD/rh6/daily" /etc/yum.repos.d/* > /dev/null ; then
+    wget -O - http://labs.consol.de/OMD/rh60/daily/daily.repo > /etc/yum.repos.d/daily.repo
+    # this updates the repo cache
+    yum makecache
+fi
+if omdpackage=$(yum search omd- | grep ^omd | tail -1) ; then
+# since this whole stuff might fail, we rather catch the return
+    export omdpackage
+else 
+    return $?
+fi
 }
 
 omd_installed()
