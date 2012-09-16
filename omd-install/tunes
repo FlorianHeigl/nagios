@@ -138,3 +138,43 @@ if ! rpm -qa | grep "omd-" ; then
     yum install $omdpackage
 fi
 }
+
+
+
+
+
+
+
+
+# lets do this
+
+
+omd is installed
+omd is not installed
+
+omd repo is installed
+omd repo is not installed
+
+omd directory exists
+omd directory doesnt exist
+
+omd directory has space
+omd directory has no space
+
+lv for omd directory exists and has a filesystem
+lv for omd directory exists and has no filesystem
+
+lv for omd directory doesnt exist
+
+vg01 exists 
+vg01 doesnt exist
+vg01 has space
+vg01 has no space
+vg00 exists with space for lv
+
+disk sdc has pv header
+disk sdc has no pv header
+
+disk sdc exists
+disk sdc doesnt exist
+
