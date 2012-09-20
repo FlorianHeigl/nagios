@@ -1,0 +1,12 @@
+
+
+
+description:
+This check is supposed to query the status of fans on Areca Raid HBAs.
+At the moment it can only inventorize them due to lack of test hardware.
+
+
+inventory:
+For each fan that is reported by the controller the RPM value will be verified
+If this is found to be higher than 0, an item is created.
+
