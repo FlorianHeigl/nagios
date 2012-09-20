@@ -1,0 +1,37 @@
+#!/usr/bin/python
+
+
+
+# Fans
+
+#.1.3.6.1.4.1.18928.1.2.2.1.9.1.1.1 = INTEGER: 1
+#.1.3.6.1.4.1.18928.1.2.2.1.9.1.2.1 = STRING: "CPU Fan"
+#.1.3.6.1.4.1.18928.1.2.2.1.9.1.3.1 = INTEGER: 0
+
+# snmp_info  : oid(".1.3.6.1.4.1.18928.1.2.2.1.9.1"), [ "1", "2", "3" ]
+
+def inventory_areca_hba_fans(info):
+    inventory = []
+    for line in info[0]:
+        # If the controller reports a spinning fan
+        if len(line) == 3 and saveint(line[2]) != 0:
+            # it would be called "CPU Fan" we grab only "CPU" from that.
+            fan = line[1].split()[0]
+            inventory.append((fan, None)) 
+    return inventory
+
+
+def check_areca_hba_fans(item, _no_params, info):
+    return (3, "UNKNOWN - Check is not implemented, Patches welcome")
+
+
+check_info["areca_hba_fans"]  = {
+    "check_function"      : check_areca_hba_fans,
+    "inventory_function"  : inventory_areca_hba_fans,
+    "has_perfdata"        : True,
+    "service_description" : "Fan %s",
+    # Find Areca SAS MIB
+    "snmp_scan_function"  : lambda oid: oid(".1.3.6.1.2.1.1.2.0").startswith(".1.3.6.1.4.1.18928.1"),
+    "snmp_info"           : [(".1.3.6.1.4.1.18928.1.2.2.1.9.1", [ "1", "2", "3" ])],
+}
+
