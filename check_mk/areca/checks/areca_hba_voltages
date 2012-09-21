@@ -60,6 +60,8 @@ def inventory_areca_hba_voltages(info):
 
     areca_info = parse_areca(info, "voltages")
     for sensor_name in areca_info["voltages"].keys():
+        # Skip the battery sensor, I dont have one, impossible to
+        # make the check match for it.
         if sensor_name.lower() != "battery status":
             inventory.append((sensor_name, None))
     return  inventory
