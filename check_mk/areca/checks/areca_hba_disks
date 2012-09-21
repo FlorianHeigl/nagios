@@ -1,0 +1,68 @@
+#!/usr/bin/python
+
+# utf-8 encode
+
+
+#THIS is horrible now
+#The controllers have 8 tables that contain the disks, so they can
+#group them to max 8 SES-enabled enclosures
+
+# We'll best be polite and include the enclosure ID in the item.
+
+
+# hddEnclosure01Slots:
+#.1.3.6.1.4.1.18928.1.2.3.2.4.1.1.1 = 1
+#.1.3.6.1.4.1.18928.1.2.3.2.4.1.1.20 = 20
+# hddEnclosure01Desc:
+#.1.3.6.1.4.1.18928.1.2.3.2.4.1.2.1 = "SLOT 01"
+#.1.3.6.1.4.1.18928.1.2.3.2.4.1.2.20 = "SLOT 20"
+# hddEnclosure01Name:
+#.1.3.6.1.4.1.18928.1.2.3.2.4.1.3.1 = "N.A."
+#.1.3.6.1.4.1.18928.1.2.3.2.4.1.3.20 = "WDC WD30EFRX-68AX9N0                    "
+# hddEnclosure01Serial:
+#.1.3.6.1.4.1.18928.1.2.3.2.4.1.4.1 = "N.A."
+#.1.3.6.1.4.1.18928.1.2.3.2.4.1.4.20 = "1234567            "
+# hddEnclosure01FirmVer:
+#.1.3.6.1.4.1.18928.1.2.3.2.4.1.5.1 = "N.A."
+#.1.3.6.1.4.1.18928.1.2.3.2.4.1.5.20 = "CC1H    "
+# hddEnclosure01Capacity:
+#.1.3.6.1.4.1.18928.1.2.3.2.4.1.6.1 = 0
+#.1.3.6.1.4.1.18928.1.2.3.2.4.1.6.20 = 3000600
+# hddEnclosure01Type:
+#.1.3.6.1.4.1.18928.1.2.3.2.4.1.7.1 = 0
+#.1.3.6.1.4.1.18928.1.2.3.2.4.1.7.20 = 1
+#  hddEnclosure01State:
+#.1.3.6.1.4.1.18928.1.2.3.2.4.1.8.1 = "Empty Slot"
+#.1.3.6.1.4.1.18928.1.2.3.2.4.1.8.20 = "RaidSet Member"
+
+#.1.3.6.1.4.1.18928.1.2.3.2.4.1.N.C.D
+#                               | | |
+#                               | | +---enc disk id
+#                               | +-----field
+#                               +-------enclosure
+
+
+def parse_areca(info, what):
+   import pprint
+   pprint.pprint(info)
+
+def inventory_areca_hba_disks(info):
+    parse_areca(info, "disks")
+    return []
+
+
+check_info["areca_hba_disks"]  = {
+#    "check_function"      : check_areca_hba_disks,
+    "inventory_function"  : inventory_areca_hba_disks,
+    "has_perfdata"        : True,
+    "service_description" : "PDisk %s",
+    # Find Areca SAS MIB
+    "snmp_scan_function"  : lambda oid: oid(".1.3.6.1.2.1.1.2.0").startswith(".1.3.6.1.4.1.18928.1"),
+#    "snmp_info"           : [(".1.3.6.1.4.1.18928.1.2.3.2.4.1", [ "1", "2", "3",  ])],
+# do i wanna fetch 8 tables (all enclosures), and how so
+# do i wanna also fetch the raidsets in here?
+# how does it look in jbod mode
+# where does i get pony
+    "snmp_info"           : [(".1.3.6.1.4.1.18928.1.2.3.2.4.1", [ "1" ])],
+}
+
