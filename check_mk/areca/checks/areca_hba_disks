@@ -61,6 +61,9 @@ check_info["areca_hba_disks"]  = {
 #    "snmp_info"           : [(".1.3.6.1.4.1.18928.1.2.3.2.4.1", [ "1", "2", "3",  ])],
 # do i wanna fetch 8 tables (all enclosures), and how so
 # do i wanna also fetch the raidsets in here?
+# Yes probably and I want to make my items compatible to this - immediate WIN!
+#.1.3.6.1.4.1.18928.1.2.4.1.1.8.0 = "E2S13,E2S9,E2S5,E2S15"
+#.1.3.6.1.4.1.18928.1.2.4.1.1.8.1 = "E2S14,E2S10,E2S6,E2S2" 
 # how does it look in jbod mode
 # where does i get pony
     "snmp_info"           : [(".1.3.6.1.4.1.18928.1.2.3.2.4.1", [ "1" ])],
