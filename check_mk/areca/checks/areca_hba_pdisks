@@ -1,13 +1,6 @@
 #!/usr/bin/python
 
-# utf-8 encode
-
-
-#THIS is horrible now
-#The controllers have 8 tables that contain the disks, so they can
-#group them to max 8 SES-enabled enclosures
-
-# We'll best be polite and include the enclosure ID in the item.
+# FIXME: utf-8 encode
 
 
 # hddEnclosure01Slots:
@@ -15,15 +8,11 @@
 #.1.3.6.1.4.1.18928.1.2.3.2.4.1.1.20 = 20
 # hddEnclosure01Desc:
 #.1.3.6.1.4.1.18928.1.2.3.2.4.1.2.1 = "SLOT 01"
-#.1.3.6.1.4.1.18928.1.2.3.2.4.1.2.20 = "SLOT 20"
 # hddEnclosure01Name:
-#.1.3.6.1.4.1.18928.1.2.3.2.4.1.3.1 = "N.A."
 #.1.3.6.1.4.1.18928.1.2.3.2.4.1.3.20 = "WDC WD30EFRX-68AX9N0                    "
 # hddEnclosure01Serial:
-#.1.3.6.1.4.1.18928.1.2.3.2.4.1.4.1 = "N.A."
 #.1.3.6.1.4.1.18928.1.2.3.2.4.1.4.20 = "1234567            "
 # hddEnclosure01FirmVer:
-#.1.3.6.1.4.1.18928.1.2.3.2.4.1.5.1 = "N.A."
 #.1.3.6.1.4.1.18928.1.2.3.2.4.1.5.20 = "CC1H    "
 # hddEnclosure01Capacity:
 #.1.3.6.1.4.1.18928.1.2.3.2.4.1.6.1 = 0
@@ -35,6 +24,7 @@
 #.1.3.6.1.4.1.18928.1.2.3.2.4.1.8.1 = "Empty Slot"
 #.1.3.6.1.4.1.18928.1.2.3.2.4.1.8.20 = "RaidSet Member"
 
+# How to grok:
 #.1.3.6.1.4.1.18928.1.2.3.E.4.1.F.D
 #                         |     | |
 #                         |     | +---enc disk id
@@ -44,35 +34,31 @@
 
 import pprint
 
-def inventory_areca_hba_disks(info):
+def inventory_areca_hba_pdisks(info):
     inventory = []
     for line in info:
         for enclosure_slot in line:
             if len(enclosure_slot) == 8 and enclosure_slot[-1].split()[0] != "Empty":
                 enc, slot = enclosure_slot[0].split(".")
-                diskname = ("Encl%s/Slot%02d" % (enc, int(slot)))
+                diskname = ("%d/%02d" % (int(enc), int(slot)))
                 inventory.append((diskname, None))
     return inventory
 
 
-check_info["areca_hba_disks"]  = {
-#    "check_function"      : check_areca_hba_disks,
-    "inventory_function"  : inventory_areca_hba_disks,
+check_info["areca_hba_pdisks"]  = {
+#    "check_function"      : check_areca_hba_pdisks,
+    "inventory_function"  : inventory_areca_hba_pdisks,
     "has_perfdata"        : True,
-    "service_description" : "PDisk %s",
+    "service_description" : "PDisk Enc/Sl %s",
     # Find Areca SAS MIB
     "snmp_scan_function"  : lambda oid: oid(".1.3.6.1.2.1.1.2.0").startswith(".1.3.6.1.4.1.18928.1"),
-#    "snmp_info"           : [(".1.3.6.1.4.1.18928.1.2.3.2.4.1", [ "1", "2", "3",  ])],
-# do i wanna fetch 8 tables (all enclosures), and how so
-# do i wanna also fetch the raidsets in here?
-# Yes probably and I want to make my items compatible to this - immediate WIN!
-#.1.3.6.1.4.1.18928.1.2.4.1.1.8.0 = "E2S13,E2S9,E2S5,E2S15"
-#.1.3.6.1.4.1.18928.1.2.4.1.1.8.1 = "E2S14,E2S10,E2S6,E2S2" 
-# how does it look in jbod mode
-# where does i get pony
     "snmp_info"           : [(".1.3.6.1.4.1.18928.1.2.3", 
-                                  # There's up to 8 enclosures
+        # unclear: how does it look in jbod mode?
+        # where does i get pony?
+        # There's up to 8 enclosures, "1" is hardcoded having 8 slots.
+        # probably it's the ext. SAS connector. 
                                   [ "1", "2", "3", "4", "5", "6", "7", "8" ], 
+        # Below each enclosure there's the following structure for disk data
                                   [ "4.1.1", # The slot ids
                                     "4.1.2", # The slot descrs
                                     "4.1.3", # The disk model
