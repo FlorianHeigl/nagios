@@ -35,11 +35,11 @@
 #.1.3.6.1.4.1.18928.1.2.3.2.4.1.8.1 = "Empty Slot"
 #.1.3.6.1.4.1.18928.1.2.3.2.4.1.8.20 = "RaidSet Member"
 
-#.1.3.6.1.4.1.18928.1.2.3.2.4.1.N.C.D
-#                               | | |
-#                               | | +---enc disk id
-#                               | +-----field
-#                               +-------enclosure
+#.1.3.6.1.4.1.18928.1.2.3.E.4.1.F.D
+#                         |     | |
+#                         |     | +---enc disk id
+#                         |     +-----field
+#                         +-------enclosure
 
 
 import pprint
@@ -50,7 +50,7 @@ def inventory_areca_hba_disks(info):
         for enclosure_slot in line:
             if len(enclosure_slot) == 8 and enclosure_slot[-1].split()[0] != "Empty":
                 enc, slot = enclosure_slot[0].split(".")
-                diskname = ("E%sS%s" % (enc, slot))
+                diskname = ("Encl%s/Slot%02d" % (enc, int(slot)))
                 inventory.append((diskname, None))
     return inventory
 
@@ -82,7 +82,6 @@ check_info["areca_hba_disks"]  = {
                                     "4.1.6", #
                                     "4.1.7", # 
                                     "4.1.8", #
-
                                   ]
                             )],
 }
