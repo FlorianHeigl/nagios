@@ -78,7 +78,7 @@ def check_areca_hba_voltages(item, _no_params, info):
         if v_cur < v_rated - v_rated / 100*5 or v_cur > v_rated + v_rated / 100*5:
             return (1, "WARNING - Voltage is %02fV" % v_cur, perfdata)
         else:
-            return (0, "OK - Voltage is normal", perfdata)
+            return (0, "OK - Voltage is ok", perfdata)
     return (3, "UNKNOWN - Voltage sensor not found in agent output")
 
 

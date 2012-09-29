@@ -1,0 +1,72 @@
+#!/usr/bin/python
+
+# FIXME: utf-8 encode
+
+
+def inventory_areca_hba_ldisks(info):
+    inventory = []
+
+    # not sure why i end up with my info double stacked
+    # but i'm sure it's me.
+    for line in info[0]:
+        if len(line) == 6:
+            vsf_id, vsf_name, vsf_rsf, vsf_size, vsf_state, vsf_rbld = line
+            inventory.append((vsf_id, None))
+    return inventory
+
+def check_areca_hba_ldisks(item, _no_params, info):
+    for line in info[0]:
+        vsf_id, vsf_name, vsf_rsf, vsf_size, vsf_state, vsf_rbld = line
+        # Needs testing! maybe the vsf id's change if you delete an
+        # intermittent vsf
+        if vsf_id == item:
+            state = 3
+            msg = "%s is %s" % (vsf_name, vsf_state.lower())
+            if    vsf_state == "Normal":
+                state = 0
+            elif  vsf_state == "Rebuilding":
+                state = 1
+                size_gb = int(vsf_size) / 1024
+                # The areca web ui shows 7.7% when the value is 77.
+                # I hope it's not really at 7.7% instead of 77%. Since that would mean
+                # a rebuild takes a few days, which would be sick.
+                reb_gb  = size_gb * int(vsf_rbld) / 100
+                msg   = msg + " - %s%% (%d/%d GB) done" % (vsf_rbld, reb_gb, size_gb)
+            else:
+                msg = msg + " - Unhandled state"
+            return (state, nagios_state_names[state] + " - " +  msg)
+ 
+    return (3, "UNKW - Volset not found in agent output")
+
+
+check_info["areca_hba_ldisks"]  = {
+    "check_function"      : check_areca_hba_ldisks,
+    "inventory_function"  : inventory_areca_hba_ldisks,
+    "has_perfdata"        : True,
+    "service_description" : "Volume set %s",
+    # Find Areca SAS MIB
+    "snmp_scan_function"  : lambda oid: oid(".1.3.6.1.2.1.1.2.0").startswith(".1.3.6.1.4.1.18928.1"),
+    "snmp_info"           : [(".1.3.6.1.4.1.18928.1.2.5.1.1", 
+        # Below each enclosure there's the following structure for disk data
+                                  [
+          "1", # Volume Set id
+          "2", # Volume Set name
+          "3", # Underlying Raid Set
+          "4", # Volume Set size
+          "5", # Volume Set state
+          "6", # Rebuild % (0=not rebuilding)
+#          "7", # Unknown
+#          "8", # Unknown
+#          "9", # Unknown
+#         "10", # Unknown
+#         "11", # Raid level
+#         "12", # Stripe size?
+#         "13", # Number of underlying disks?
+#         "14", # Unknown
+#         "15", # Unknown
+#         "16", # Incorrect data
+#         "17", # Incorrect data
+                                  ]
+                            )],
+}
+

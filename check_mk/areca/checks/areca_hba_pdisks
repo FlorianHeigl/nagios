@@ -37,7 +37,7 @@ import pprint
 def inventory_areca_hba_pdisks(info):
     inventory = []
     for enclosure_entry in info:
-        for slot_entry in line:
+        for slot_entry in enclosure_entry:
             if len(slot_entry) == 8 and slot_entry[-1].split()[0] != "Empty":
                 enc, slot = slot_entry[0].split(".")
                 diskname = ("%d/%02d" % (int(enc), int(slot)))
@@ -53,14 +53,14 @@ def check_areca_hba_pdisks(item, _no_params, info):
             # I decided to not get too smart, and so we're not following a disk 
             # around if you put it somewhere else.
             if diskname == item:
-                disk_descr = "[%s-%s]" % (slot_entry[2], slot_entry[3])
+                disk_descr = "(%s %s)" % (slot_entry[2], slot_entry[3])
                 # What I'm checking here is a field that SEEMS to be the right one.
                 # Contact me if this seems wrong. Someone needs to test / adjust it 
                 # with some JBOD mode array and pull some disks.
                 if int(slot_entry[6]) != 1:
-                    return (2, "CRIT - Disk %s seems to have failed." % disk_descr)
+                    return (2, "CRIT - Disk is failed. %s" % disk_descr)
                 else:
-                    return (0, "OK - Disk is OK %s" % disk_descr)
+                    return (0, "OK - Disk is OK. %s" % disk_descr)
     return (3, "Disk not found in agent output")
 
 
