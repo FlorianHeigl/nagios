@@ -27,11 +27,14 @@ def check_areca_hba_ldisks(item, _no_params, info):
             elif  vsf_state == "Rebuilding":
                 state = 1
                 size_gb = int(vsf_size) / 1024
-                # The areca web ui shows 7.7% when the value is 77.
-                # I hope it's not really at 7.7% instead of 77%. Since that would mean
+                # fully rebuilt = 0
+                # 1% rebuilt    = 10
+                # 99.9% done    = 999
                 # a rebuild takes a few days, which would be sick.
-                reb_gb  = size_gb * int(vsf_rbld) / 100
-                msg   = msg + " - %s%% (%d/%d GB) done" % (vsf_rbld, reb_gb, size_gb)
+                reb_gb  = size_gb * int(vsf_rbld) / 1000
+                # I have a cold, no idea how to correctly float this boat.
+                pct = int(vsf_rbld) / 10
+                msg   = msg + " - %d%% (%d/%d GB) done" % (pct, reb_gb, size_gb)
             else:
                 msg = msg + " - Unhandled state"
             return (state, nagios_state_names[state] + " - " +  msg)
