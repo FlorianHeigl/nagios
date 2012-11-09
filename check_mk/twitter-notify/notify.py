@@ -70,6 +70,8 @@ $LONGSERVICEOUTPUT$
 # Smarties can auto-select here:
 # a PAGER starting with @TwitterName needs to call out to Twagios
 # a PAGER with is all [0-9]+ is probably a SMS phone number to ring.
+# Alternatively, if you want to use a custom variable:
+# http://nagios.sourceforge.net/docs/3_0/customobjectvars.html
 
 notification_host_pager_command    = u"/omd/sites/remotely/local/bin/twagios $CONTACTPAGER$ $HOSTGROUPNAMES$"
 notification_service_pager_command = u"/omd/sites/remotely/local/bin/twagios $CONTACTPAGER$ $SERVICEGROUPNAMES$"
