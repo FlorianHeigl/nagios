@@ -1,0 +1,24 @@
+#!/usr/bin/python
+#
+# See: http://talkfast.org/2010/05/31/twitter-from-the-command-line-in-python-using-oauth
+# This script can be used to pin-authenticate your twitter application
+
+
+import sys
+import os
+import tweepy
+import string
+
+
+# Could modify this to read from twagios
+consumer_key    = 'FillMe'
+consumer_secret = 'FillMe'
+auth = tweepy.OAuthHandler(consumer_key, consumer_secret)
+auth_url = auth.get_authorization_url()
+print 'Please authorize: ' + auth_url
+verifier = raw_input('PIN: ').strip()
+auth.get_access_token(verifier)
+
+# Could modify this to write into twagios
+print "access_key = '%s'" % auth.access_token.key
+print "access_secret = '%s'" % auth.access_token.secret

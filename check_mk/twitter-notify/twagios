@@ -1,0 +1,68 @@
+#!/usr/bin/python
+#
+# See: http://talkfast.org/2010/05/31/twitter-from-the-command-line-in-python-using-oauth
+
+import sys
+import os
+# Note you need a tweepy version WITH media support.
+import tweepy
+import string
+
+consumer_key    = 'FillMe'
+consumer_secret = 'FillMe'
+access_key      = 'FillMe'
+access_secret   = 'FillMe'
+
+
+#auth = tweepy.OAuthHandler(CONSUMER_KEY, CONSUMER_SECRET)
+#auth.set_access_token(ACCESS_KEY, ACCESS_SECRET)
+#api = tweepy.API(auth)
+
+def setup_api():
+  auth = tweepy.OAuthHandler(consumer_key, consumer_secret)
+  auth.set_access_token(access_key, access_secret)
+  return tweepy.API(auth)
+
+api = setup_api()
+
+
+# Process the commandline argument, replace words etc. to shorten the message
+s = sys.argv[2]
+s = string.replace(s,"WARNING","WARN")
+s = string.replace(s,"PROBLEM","PROB")
+s = string.replace(s,"CRITICAL","CRIT")
+
+
+# Add your koala pictures here
+# Also please note that the parsing for image selection 
+# could be MUCH improved
+if   "WARN" in s:
+  fn = "/opt/wfmanage/koala-warn.jpg"
+  print "ein warning"
+elif "PROB" in s:
+  print "ein warning"
+  fn = "/opt/wfmanage/koala-warn.jpg"
+elif "CRIT" in s:
+  print "ein critical"
+  fn = "/opt/wfmanage/koala-crit.jpg"
+elif "OK" in s or "-> UP" in s:
+  fn = "/opt/wfmanage/koala-ok.jpg"
+#else:
+#  print "keine ahnung"
+#  fn = os.path.abspath(sys.argv[1])
+
+status = sys.argv[1] + " " + s[0:130]
+
+# If you want to add a try/except error catcher
+# you'll need to handle a:
+# TweepError
+
+
+# Send the tweet.
+print "sending tweet: file %s, status %s" % (fn, status)
+api.status_update_with_media(fn, status=status)
+
+# This is the command per 
+# http://edvoncken.net/2011/08/twagios-2-0-nagios-notifications-revisited/
+# Send the message, 140 characters max.
+#api.update_status(s[0:140])
