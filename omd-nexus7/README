@@ -1,0 +1,10 @@
+OMD-nexus7 - run your Nagios server on a Nexus 7 tablet
+OMD package & source for Asus Nexus 7 tables running Ubuntu 12.10
+Based on ompistro for Raspberry Pi by Gerhard Lausser (see https://github.com/lausser/ompistro )
+
+Putting this up here for two reasons:
+- I think it's important to support diversity. 
+  Github can't be the one-to-rule repository. Besides, gitoriours and bitbucket 
+  are both more fun and more stable than Github.
+- I had to make a few changes that were breaking the original ompistro. Most
+  probably that was just since this is a first time ever :>
