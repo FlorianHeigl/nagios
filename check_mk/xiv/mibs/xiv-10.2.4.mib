@@ -1,0 +1,63 @@
+      -- -*- SNMP -*- mode for Emacs                                                                                                 
+      XIV-MIB DEFINITIONS ::= BEGIN                                                                                                  
+                                                                                                                                     
+      IMPORTS                                                                                                                        
+          MODULE-IDENTITY, OBJECT-TYPE,                                                                                              
+              NOTIFICATION-TYPE,                                                                                                     
+              Gauge32, Integer32   FROM SNMPv2-SMI                                                                                   
+      		ucdavis FROM UCD-SNMP-MIB                                                                                                      
+          OBJECT-GROUP, NOTIFICATION-GROUP,                                                                                          
+             MODULE-COMPLIANCE    FROM SNMPv2-CONF                                                                                  
+                                                                                                                                    
+         TEXTUAL-CONVENTION, DisplayString                                                                                          
+                                  FROM SNMPv2-TC;                                                                                   
+                                                                                                                                    
+     xivMIB MODULE-IDENTITY                                                                                                         
+         LAST-UPDATED "200910010000Z"                                                                                               
+         ORGANIZATION "IBM"                                                                                                         
+         CONTACT-INFO "IBM"                                                                                                         
+         DESCRIPTION                                                                                                                
+                 "The MIB module to describe objects for IBM XIV Storage System"                                                    
+                                                                                                                                    
+         REVISION      "200910010000Z"                                                                                              
+         DESCRIPTION                                                                                                                
+                 "v10.1 revision."                                                                                                  
+         ::= { ucdavis 77 }                                                                                                         
+                                                                                                                                    
+     xivMachine OBJECT IDENTIFIER ::= { xivMIB 1 }                                                                                  
+                                                                                                                                    
+     xivStatus OBJECT IDENTIFIER ::= { xivMachine 1 }                                                                               
+                                                                                                                                    
+     xivCompliance MODULE-COMPLIANCE                                                                                                
+         STATUS  current                                                                                                            
+         DESCRIPTION                                                                                                                
+                 "The compliance statement for SNMPv2 IBM XIV Storage System entities."                                             
+                                                                                                                                    
+         MODULE  -- this module                                                                                                     
+             MANDATORY-GROUPS { xivStatusGroup, xivInterfacesGroup, xivEventsGroup,                                                 
+     	xivEventTrapGroup, xivEventTrapNotificationGroup }                                                                             
+         ::= { xivMIB 100 }                                                                                                         
+                                                                                                                                    
+     xivStatusGroup OBJECT-GROUP                                                                                                    
+         OBJECTS { xivMachineStatus, xivFreeSpaceSoft, xivFreeSpaceHard, xivFailedDisks, xivUtilizationSoft, xivUtilizationHard }   
+         STATUS  current                                                                                                            
+         DESCRIPTION                                                                                                                
+                 "A collection of objects providing information on the                                                              
+                  IBM XIV Storage System."                                                                                          
+         ::= { xivStatus 100 }                                                                                                      
+                                                                                                                                    
+                                                                                                                                    
+     xivGlobalStatus OBJECT IDENTIFIER ::= { xivStatus 1 }                                                                          
+                                                                                                                                    
+     xivInterfaces   OBJECT IDENTIFIER ::= { xivStatus 2 }                                                                          
+                                                                                                                                    
+     xivInterfacesGroup OBJECT-GROUP                                                                                                
+         OBJECTS { xivIfStatus, xivIfIOPS }                                                                                         
+         STATUS  current                                                                                                            
+         DESCRIPTION                                                                                                                
+                 "A collection of objects providing information on the                                                              
+                  interfaces of the IBM XIV Storage System."                                                                        
+         ::= { xivInterfaces 100 }                                                                                                  
+                                                                                                                                    
+                                                                                                                                    
+     -- InterfaceIndex contains the semantics of ifIndex and should

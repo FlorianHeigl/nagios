@@ -1,8 +1,16 @@
-I happened to see the XIV can be monitored using snmp. Probably this is rather 
-limited compared to using SMI but it's still an interesting option.
+I happened to see the XIV can be monitored using snmp. 
+From what I saw so far the XIV only exposes a very sad amount of information
+via SNMP. But since we just do monitoring, not storage management: even a
+"xivmachinestatus" is sufficient to see if the machines' status is not OK,
+Right?
 
 I'll be adding a proof of concept check here.
 
 References:
 http://aussiestorageblog.wordpress.com/2011/03/17/xiv-and-snmp-lets-walk-the-walk/
 http://www-01.ibm.com/support/docview.wss?uid=ssg1S4000913
+
+
+
+It makes me kinda happy I was right that SNMP is just a sad joke
+for monitoring storage. kudos.
