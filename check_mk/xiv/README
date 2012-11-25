@@ -1,0 +1,8 @@
+I happened to see the XIV can be monitored using snmp. Probably this is rather 
+limited compared to using SMI but it's still an interesting option.
+
+I'll be adding a proof of concept check here.
+
+References:
+http://aussiestorageblog.wordpress.com/2011/03/17/xiv-and-snmp-lets-walk-the-walk/
+http://www-01.ibm.com/support/docview.wss?uid=ssg1S4000913

@@ -1,0 +1,40 @@
+#!/usr/bin/python
+#
+#XIV-MIB::xivMachineStatus = STRING: "Full Redundancy"
+#XIV-MIB::xivFailedDisks = INTEGER: 0
+#XIV-MIB::xivUtilizationSoft = Gauge32: 69
+#XIV-MIB::xivUtilizationHard = Gauge32: 90
+#XIV-MIB::xivFreeSpaceSoft = INTEGER: 49770
+#XIV-MIB::xivFreeSpaceHard = INTEGER: 7954
+#XIV-MIB::xivIfIOPS.1004 = Gauge32: 6519
+#XIV-MIB::xivIfIOPS.1005 = Gauge32: 6773
+#XIV-MIB::xivIfIOPS.1006 = Gauge32: 6515
+#XIV-MIB::xivIfIOPS.1007 = Gauge32: 6557
+#XIV-MIB::xivIfIOPS.1008 = Gauge32: 6517
+#XIV-MIB::xivIfIOPS.1009 = Gauge32: 6575
+#XIV-MIB::xivIfStatus.1004 = STRING: "OK"
+#XIV-MIB::xivIfStatus.1005 = STRING: "OK"
+#XIV-MIB::xivIfStatus.1006 = STRING: "OK"
+#XIV-MIB::xivIfStatus.1007 = STRING: "OK"
+#XIV-MIB::xivIfStatus.1008 = STRING: "OK"
+#XIV-MIB::xivIfStatus.1009 = STRING: "OK"
+#XIV-MIB::xivEventCode.5 = STRING: START_WORK
+#XIV-MIB::xivEventCode.9 = STRING: USER_SHUTDOWN
+
+
+
+inventory_xiv_status(info):
+    # inventorize if scan worked
+    return [ None, None ]
+
+
+check_xiv_status(_no_item, _no_params, info):
+
+    msg = " - Machine status is %s" % xivMachineStatus
+    if "full redundancy" in xivMachineStatus.lower():
+        return (0, "OK" + msg)
+    else:
+        return (2, "CRIT" + msg)
+
+# get the field:
+#xivMachineStatus
