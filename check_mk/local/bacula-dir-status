@@ -1,0 +1,21 @@
+#!/bin/sh
+
+dir_status()
+{
+    msg=`echo "status dir" | bconsole | grep "Daemon started"`
+    if [ $? = 0 ]; then
+      status=0
+      txt="OK - Bacula director is accessible"
+    # ANY thing going wrong gives us a crit
+    else
+      txt="CRIT - Bacula director inaccessible"
+      status=2
+    fi
+    export status txt
+}
+
+
+if type bacula-dir 2>&1 > /dev/null ; then 
+     dir_status
+     echo "${status} bacula-dir-connect - ${txt}"
+fi
