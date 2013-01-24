@@ -1,0 +1,8 @@
+#!/bin/sh
+
+# On Alpine I can't tell if a given update is for security or standard
+if which apk > /dev/null ; then
+  echo "<<<updates>>>"
+  UPGRADES=`apk version | grep -vc Installed`
+  echo "$UPGRADES 0 0 0"
+fi
