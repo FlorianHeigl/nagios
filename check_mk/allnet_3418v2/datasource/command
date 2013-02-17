@@ -1,0 +1,15 @@
+# This should be a python script that returns json or otherwise tabularized
+# data.
+# alternative: hack fw image to support snmp
+user=user
+pass=pass
+ip=ip
+wget -q -O- --user=$user --password=$test 'http://$ip/xml/?mode=sensor&type=list'
+
+
+# 2x Temp
+<sensors><sensor><id>1</id><name>Intern</name><current>35.06</current><unit>°C</unit><minmax><today><min><value>25.56</value><date>01.01.1970 00:00:59</date><timestamp>59</timestamp></min><max><value>43.00</value><date>01.01.1970 00:02:57</date><timestamp>177</timestamp></max></today><absolute><min><value>25.56</value><date>01.01.1970 00:02:57</date><timestamp>177</timestamp></min><max><value>43.00</value><date>01.01.1970 00:00:00</date><timestamp></timestamp></max></absolute></minmax></sensor><sensor><id>101</id><name>Anschluß 0</name><current>24.00</current><unit>°C</unit><minmax><today><min><value>23.50</value><date>01.01.1970 00:00:59</date><timestamp>59</timestamp></min><max><value>24.06</value><date>17.02.2013 22:12:21</date><timestamp>1361139141</timestamp></max></today><absolute><min><value>23.50</value><date>17.02.2013 22:12:21</date><timestamp>1361139141</timestamp></min><max><value>24.06</value><date>01.01.1970 00:00:00</date><timestamp></timestamp></max></absolute></minmax></sensor></sensors>
+
+
+# 1x Temp, 1x Humidity
+<sensors><sensor><id>1</id><name>Intern</name><current>37.31</current><unit>°C</unit><minmax><today><min><value>37.31</value><date>01.01.1970 00:03:58</date><timestamp>238</timestamp></min><max><value>37.56</value><date>01.01.1970 00:02:22</date><timestamp>142</timestamp></max></today><absolute><min><value>37.31</value><date>01.01.1970 00:02:22</date><timestamp>142</timestamp></min><max><value>37.56</value><date>01.01.1970 00:00:00</date><timestamp></timestamp></max></absolute></minmax></sensor><sensor><id>101</id><name>Anschluß 0</name><current>24.65</current><unit>°C</unit><minmax><today><min><value>24.66</value><date>01.01.1970 00:03:51</date><timestamp>231</timestamp></min><max><value>24.84</value><date>01.01.1970 00:01:53</date><timestamp>113</timestamp></max></today><absolute><min><value>24.66</value><date>01.01.1970 00:01:53</date><timestamp>113</timestamp></min><max><value>24.84</value><date>01.01.1970 00:00:00</date><timestamp></timestamp></max></absolute></minmax></sensor><sensor><id>102</id><name>Anschluß 0</name><current>25.09</current><unit>%</unit><minmax><today><min><value>24.95</value><date>01.01.1970 00:02:29</date><timestamp>149</timestamp></min><max><value>25.13</value><date>01.01.1970 00:04:18</date><timestamp>258</timestamp></max></today><absolute><min><value>24.95</value><date>01.01.1970 00:04:18</date><timestamp>258</timestamp></min><max><value>25.13</value><date>01.01.1970 00:00:00</date><timestamp></timestamp></max></absolute></minmax></sensor></sensors>

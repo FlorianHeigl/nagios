@@ -1,0 +1,43 @@
+#!/usr/bin/python
+
+#.1.3.6.1.4.1.45.1.6.3.7.1.1.5.5.10.0 = INTEGER: 56
+# Value is Temp_celsius * 2
+
+# guess based values, please override to your liking.
+avaya_temp_default_levels = (42, 50)
+
+def inventory_avaya_ers_temp(info):
+   if len(info[0]) == 1:
+   # loop over the sensors in future
+      return [ (None, "avaya_temp_default_levels") ]
+ 
+
+def check_avaya_ers_temp(item, params, info):
+   # just give me the damn single oid function :((
+   # blah, loopiloop instead
+   temp = float(info[0][0]) / 2
+
+   # maybe gotta convert them. don't think so.
+   warn, crit = params
+   perfdata = [ ("temp", temp, "", "", warn, crit) ]
+   if   temp >= crit:
+       state = 2
+   elif temp >= warn:
+       state = 1
+   else:
+       state = 0
+
+   infotext = " - Current temp is %.1f (warn/crit at %.1f/%.1f)" % (temp, warn, crit)
+
+   return (state, nagios_state_names[state] + infotext, perfdata)
+
+
+check_info["avaya_ers_temp"] = {
+   "check_function"        : check_avaya_ers_temp,
+   "inventory_function"    : inventory_avaya_ers_temp,
+   "snmp_scan_function"    : lambda oid: oid(".1.3.6.1.2.1.1.1.0").lower().startswith("ethernet routing switch"),
+   "snmp_info"             : (".1.3.6.1.4.1.45.1.6.3.7.1.1.5", ["5.10.0"]),
+   # once we loop over the sensors
+   #"service_description"   : "TEMP %d",
+   "service_description"   : "TEMP",
+}
