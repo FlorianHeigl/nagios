@@ -3,6 +3,9 @@
 # On Alpine I can't tell if a given update is for security or standard
 if which apk > /dev/null ; then
   echo "<<<updates>>>"
+  # could run this only if file's older than 1 hour, idk if Alpine really fetches it 
+  # if it's identical.
+  apk -q update
   UPGRADES=`apk version | grep -vc Installed`
   echo "$UPGRADES 0 0 0"
 fi
