@@ -1,0 +1,82 @@
+# 
+
+How to use the JSON interface to Check_MK is described at 
+http://mathias-kettner.de/checkmk_multisite_automation.html
+
+it also shows the URL format with the following example:
+curl 'http://localhost/heute/check_mk/view.py?view_name=svcproblems
+&output_format=JSON&_username=auto&_secret=BLARBS@JQTAH@UWMBJXB'
+
+
+Modifying this to give the data for only one host - normally you need to 
+specify a site name but we don't actually know it. we can skip it as long
+you don't have duplicate host names between sites. And I really hope you don't
+
+curl 'http://OMD-server/omdsite/check_mk/view.py?host=myhost&view_name=host&output_format=JSON&_username=auto&_secret=myauthkey'
+
+Starting from that query (which the python script also uses) you can select
+data you want to be displayed.
+
+
+An example would be to use put all critical software metrics (full disk, 
+network interface errors, missing backup...) into a single servicegroup and then
+change the view you're querying to one that shows this servicegroup.
+
+You would query the service group, your current host and filter for errors.
+That way you'll be able to tell if there is a critical miscondition on your
+system.
+
+You can parse that output right now and later process it in your own scripts.
+Another idea is to have exit code handling for cmkcli and then you would 
+just use it like 
+
+script_that_prepares_something
+cmkcli && 
+script_that_runs_something
+
+That way your second script would only run if the Nagios status of the host
+is "good to go".
+
+
+# TODO
+1. add cli return codes
+2. Just review add comments to all functions 
+3. add another output
+4. add setup
+5. cover with tests
+
+
+
+
+# HOW TO GET OMD instead of doing old ages' Nagios installs:
+
+
+Here you can download OMD - which is the best way to install Nagios
+Pick the right version for your distro.
+
+
+http://labs.consol.de/lang/de/nagios/omd-repository/
+
+You'll want a recent version since there's an issue with the JSON data in
+older versions.
+
+for centos/rhel you need the epel or similar repos installed
+
+for debian ubuntu just install....
+
+You _ALSO_ must switch to apache mpm prefork
+(aptitude search ...)
+
+
+after installing do
+
+
+	# create two fullblown nagios envs
+	omd create mytestsite
+	omd create mytestsite2
+
+	# launch your two new nagios instances
+	omd start
+
+
+	and follow the instructions there

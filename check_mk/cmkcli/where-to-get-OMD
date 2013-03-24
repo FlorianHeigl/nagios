@@ -1,0 +1,28 @@
+Here you can download OMD - which is the best way to install Nagios
+Pick the right version for your distro.
+
+http://labs.consol.de/lang/de/nagios/omd-repository/
+
+You'll want a recent version since there's an issue with the JSON data in
+older versions.
+
+for centos/rhel you need the epel or similar repos installed
+
+for debian ubuntu just install....
+
+You _ALSO_ must switch to apache mpm prefork
+(aptitude search ...)
+
+
+after installing do
+
+
+	# create two fullblown nagios envs
+	omd create mytestsite
+	omd create mytestsite2
+
+	# launch your two new nagios instances
+	omd start
+
+
+	and follow the instructions there

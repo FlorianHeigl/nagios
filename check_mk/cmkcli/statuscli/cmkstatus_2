@@ -24,6 +24,8 @@ transport()
 {
 if ! [ -z $mode ]; then
     mode=$1
+else
+    mode=fake
 fi
 
 # define right pieces for connecting to server
