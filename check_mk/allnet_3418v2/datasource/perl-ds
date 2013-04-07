@@ -1,0 +1,15 @@
+#!/usr/bin/perl
+
+# Pipe in curl data
+use XML::Simple;
+
+my $in = <>;
+my $parsed = XMLin($in, KeyAttr => ['id']);
+
+while(my ($id, $stuff) = each %{$parsed->{'sensor'}}){
+ print STDOUT join("|",
+               "id", $id,
+               "unit", $stuff->{unit},
+               "name", $stuff->{name},
+               "current", $stuff->{current}) . "\n";
+}
