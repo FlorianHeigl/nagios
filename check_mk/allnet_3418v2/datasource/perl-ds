@@ -6,6 +6,7 @@ use XML::Simple;
 my $in = <>;
 my $parsed = XMLin($in, KeyAttr => ['id']);
 
+print STDOUT "<<<allnet_sensors:sep(124)>>>\n";
 while(my ($id, $stuff) = each %{$parsed->{'sensor'}}){
  print STDOUT join("|",
                "id", $id,

@@ -1,0 +1,81 @@
+#!/usr/bin/python
+# -*- encoding: utf-8; py-indent-offset: 4 -*-
+# +------------------------------------------------------------------+
+# |             ____ _               _        __  __ _  __           |
+# |            / ___| |__   ___  ___| | __   |  \/  | |/ /           |
+# |           | |   | '_ \ / _ \/ __| |/ /   | |\/| | ' /            |
+# |           | |___| | | |  __/ (__|   <    | |  | | . \            |
+# |            \____|_| |_|\___|\___|_|\_\___|_|  |_|_|\_\           |
+# |                                                                  |
+# | Copyright Mathias Kettner 2010             mk@mathias-kettner.de |
+# +------------------------------------------------------------------+
+#
+# This is a free addon for check_mk.
+# The download page http://exchange.check-mk.org/ and the current source
+# can be found at http://bitbucket.org/darkfader/nagios/check_mk/edac
+#
+# check_mk is free software;  you can redistribute it and/or modify it
+# under the  terms of the  GNU General Public License  as published by
+# the Free Software Foundation in version 2.  check_mk is  distributed
+# in the hope that it will be useful, but WITHOUT ANY WARRANTY;  with-
+# out even the implied warranty of  MERCHANTABILITY  or  FITNESS FOR A
+# PARTICULAR PURPOSE. See the  GNU General Public License for more de-
+# ails.  You should have  received  a copy of the  GNU  General Public
+# License along with GNU Make; see the file  COPYING.  If  not,  write
+# to the Free Software Foundation, Inc., 51 Franklin St,  Fifth Floor,
+# Boston, MA 02110-1301 USA.
+
+
+
+# Author: Florian Heigl <fheigl@wartungsfenster.de>
+
+
+[['id', '1', 'unit', '\xb0C', 'name', 'Intern', 'current', '35.06'], ['id', '101', 'unit', '\xb0C', 'name', 'Anschlu\xdf 0', 'current', '24.00']]
+
+
+allnet_sensor_temp_levels = (30.0,34.0)
+
+def inventory_allnet_sensors(info):
+# inventorize the sensor id and description the description can be some 
+# utf-8 text and I dont know how to safely handle it.
+    inventory = []
+    for line in info:
+        if len(line) == 8:
+            inventory.append((line[1], "allnet_sensor_temp_levels"))
+    return inventory
+
+
+def check_allnet_sensors(item, params, info):
+    for line in info:
+        # man muesste hier jeden zweiten wert wegen nutzlosigkeit
+        # wegwerfen. Allnet liefert text mit spitzen klammern statt
+        # echtes xml.
+        idt, id, ut, unit, desct, desc, curvalt, cur_val = line
+       
+        if id == item:
+            if unit == "\xb0C":
+                warn, crit = params
+                val = savefloat(cur_val)
+                if   val >= crit:
+                    state = 2
+                elif val >= warn:
+                    state = 1
+                else:
+                    state = 0
+            else:
+                return (3, "UNKW - sensor type not yet supported")
+
+
+
+
+            return (state, nagios_state_names[state] + " - %s value is %s %s" % (desc, cur_val, unit))
+
+    return (3, "UNKN - invalid data from agent")
+
+
+check_info['allnet_sensors'] = {
+    "check_function"       : check_allnet_sensors,
+    "inventory_function"   : inventory_allnet_sensors,
+    "service_description"  : "Sensor %s",
+    "has_perfdata"         : False,
+}
