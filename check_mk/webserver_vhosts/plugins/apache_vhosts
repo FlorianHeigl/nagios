@@ -1,0 +1,8 @@
+#!/bin/sh
+
+if type apachectl > /dev/null ; then
+    # let's not call it apache, this kind of check is not dependant on 
+    # certain webserver.
+    echo '<<<webserver_vhosts>>>'
+    apachectl -S 2>&1 | awk '{ if ($1 == "port") print $4":"$2}'
+fi
