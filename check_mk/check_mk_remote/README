@@ -1,3 +1,10 @@
+
+
+Attention: There's now a great howto at:
+
+http://hackranger.wordpress.com/2013/08/10/check_mk-sending-data-from-remote-client-to-server-over-ssh/
+
+
 README file for check_mk_remote
 
 This is *not* a plugin for check_mk
