@@ -1,32 +1,26 @@
 #!/usr/local/bin/python
 # -*- encoding: utf-8; py-indent-offset: 4 -*-
-# ino2cmk.py
-# Florian Heigl 2013 fh@florianheigl.de
-# License: WAR-FTP
+
 
 # Config parser for writing check_mk config from external data.
-# the data is, in this case from inoXML a proprietary config management
-# system (that sadly wasn't opensourced right from the start, it's quite 
-# powerful)
-#
-#
+# Florian Heigl 2013 fh@florianheigl.tld
 # example input:
-# Server ID, Service Level,  Status, Custom mods, Build version, hostname, customer (ID and name)
-# 12      TESTING         ENABLED         10/10   i386_freebsd_9.1_build1         host-12.customer-intern.de   123 (customer name)
+# 42      TESTING         ENABLED         10/10   i386_freebsd_9.1_build1         server-42.domain-intern.tld   12345 (customer Name)
 #
 #
 # TODOS:
 # Read live data instead of the dump
 # Store and compare an output, so inactive servers can be preserved for a while
-# write hosts count for .wato file, so WATO shows correct contents.
-# write wato attributes (like IP address)
-# Only use numeric customer IDs
 # write a file with the host tags and groups
 # write lock files for hosts and subdirs
-# unsorted folder is not being written.
+# Connect _all_ tags with attributes
 
 # Done:
+# Only use numeric customer IDs
 # Write WATO files and tarball them. (:
+# unsorted folder is not being written.
+# write hosts count for .wato file
+# write wato attributes (like IP address)
 
 import os
 import subprocess
@@ -43,6 +37,7 @@ def read_data(source):
             continue
          stripped = [ item.strip() for item in parts ]
          id, usage, status, admin_commands, buildid, nil, hostname, customer = stripped
+         usage = usage.lower()
          if stripped[2] == "ENABLED":
               d[id] = { "usage" : usage, "buildid" : buildid, "hostname": hostname, "customer": customer }
        f.close() 
@@ -63,15 +58,15 @@ def build_tags(server_data):
       server_data[id]["tags"] = []
 
       # Use the service from inomgr
-      server_data[id]["tags"].append(server_data[id]['usage'].lower())
+      server_data[id]["tags"].append(server_data[id]['usage'])
 
       # find the customer name and change the output a little.
       customer_name = server_data[id]["customer"].replace("(","").replace(")","").replace(" ","_").replace(".","")
-      customer_id = server_data[id]["customer"].split("(")[0]
+      customer_id = server_data[id]["customer"].split("(")[0].replace(" ", "")
 
       # apply a tag to point out customer systems
       # can probably be replaced via rule.
-      if "ispname" not in customer_name.lower():
+      if "domain" not in customer_name.lower():
          server_data[id]["tags"].append("kundensystem")
       server_data[id]["tags"].append(customer_id)
       if customer_id not in all_customers:
@@ -86,9 +81,9 @@ def build_tags(server_data):
       ucarp  = False
       backup = False
       
-      # This is slow.
+      # This is slow and keeps many file handles.
       # if you need to work with more systems, please fix.
-      syscfg  = open('/home/me/inoxmldoc/%s.cfg' % id, 'r')
+      syscfg  = open('/home/fhe/inoxmldoc/%s.cfg' % id, 'r')
       for line in syscfg.readlines():
           # Datacenter location
           if   "in1" or "rz1" in line:
@@ -99,9 +94,10 @@ def build_tags(server_data):
               buildhost = True
           if "ucarp" in line:
               ucarp = True
-          if "set1daily" in line or "set2daily" in line:
+          if "in1daily" in line or "in2daily" in line:
               backup = True
           
+      # dc should also be added to server_data
           
       # Apply tags for items we found.
       # note, only stuff that is needed to select a good WATO folder or enforcing rules
@@ -123,12 +119,13 @@ def build_tags(server_data):
       # Note: Don't add the 'wato' tag here.
 
       # Finally, handle WATO folders.
-      if "kundensystem" in server_data[id]["tags"]:
+      print ("Server: %s, Usage: %s") % (server_data[id]["hostname"], server_data[id]["usage"])
+      if   server_data[id]["usage"] == "testing":
+          w = "/wato/testing/"
+      elif "kundensystem" in server_data[id]["tags"]:
           w = "/wato/billable/servers/"
       elif "buildhost" in server_data[id]["tags"]:
           w = "/wato/internal/buildenv/"
-      elif server_data[id]["usage"] == "testing":
-          w = "/wato/testing/"
       else:
           w = "/wato/undefined/"
 
@@ -150,6 +147,7 @@ def write_cfg(server_data, wato_folder, member_ids):
     if not os.path.exists("./%s" % wato_folder):
         os.makedirs("./%s" % wato_folder)
 
+    print "Writing config: %shosts.mk\n" % wato_folder,
     mkconf = open("./%shosts.mk" % wato_folder, 'wb')
 
     mkconf.write("""# Written by in2cmk.py
@@ -158,23 +156,56 @@ def write_cfg(server_data, wato_folder, member_ids):
 all_hosts += [
 """)
 
+    # First part, write an all_hosts entry
     for id in member_ids:
         tags = ("|").join(server_data[id]['tags'])
         host_entry = "%s|%s" % (server_data[id]['hostname'], tags)
-        mkconf.write("""    '%s|wato|"/" + FOLDER_PATH + "/"',\n""" % host_entry)
+#  "blah|lan|fileagent|12345|tcp|rz1|test|wato|/" + FOLDER_PATH + "/",
+        mkconf.write("""    "%s|wato|/" + FOLDER_PATH + "/",\n""" % host_entry)
 
     mkconf.write("]\n")
 
-    # Let me do something about the IP addresses for you.
+    # Second part, write ipaddresses entry for systems that aren't reachable
     mkconf.write("ipaddresses.update({")
-    for id in server_data.keys():
-        if not ".public-domain.de" in server_data[id]["hostname"]:
+    for id in member_ids:
+        if not ".domain.tld" in server_data[id]["hostname"]:
             mkconf.write("""    "%s" : "127.0.0.1",\n""" % server_data[id]["hostname"])
     mkconf.write("})\n")
 
+    # now write the attributes info
+# host_attributes.update(
+#{'blah': {'ipaddress': u'127.0.0.1',
+#          'tag_criticality': 'test',
+#          'tag_customers': '12345',
+#          'tag_loc': 'rz1'}})
+    mkconf.write("""# Host attributes (needed for WATO)
+host_attributes.update({\n""")
+
+    for id in member_ids:
+       mkconf.write("""     '%s': {
+        'tag_criticality' : '%s',
+        'tag_customers'   : '%s',
+""" % ( server_data[id]["hostname"], server_data[id]["usage"], "def" ))
+				#server_data[id]["customer_id"], )
+
+       if not ".domain.tld" in server_data[id]["hostname"]:
+            mkconf.write("""        'ipaddress'       : u'127.0.0.1',\n""")
+       # close host's entry
+       mkconf.write("""},\n""")
+
+    mkconf.write("})\n")
+    # then close the config file
     mkconf.close()
 
+    # write the folder's TOC file
+    foldertoc = open("./%s.wato" % wato_folder, 'wb')
+    #{'attributes': {}, 'num_hosts': 2, 'title': 'Main directory'}
+    num_hosts = len(member_ids)
+    foldertoc.write("""{'attributes': {}, 'num_hosts': %d, 'title': '%s'}\n"""  % (num_hosts, wato_folder))
+    foldertoc.close()
 
+
+    
 
 # MAIN...
 
@@ -192,9 +223,10 @@ for wato_folder, member_ids in wato_folders.items():
 # output the customer tags
 print "tag group customers:" 
 for customer_id in all_customers:
-    print customer_id
+#    print customer_id
     for customer_name in all_customer_names:
-         print customer_name
+#         print customer_name
          if customer_name.startswith(customer_id):
              print "customer_id : customer_name"
+             print "%s : %s" % (customer_id, customer_name)
 
