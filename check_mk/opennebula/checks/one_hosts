@@ -10,6 +10,7 @@ one_hosts_default_levels = {
    "used_mem" : (15.0,  99.0),
 } 
 
+one_hosts_inventory_mode = [ "individual", "summary" ]
 
 def parse_one_hosts_info(info):
    hostinfo = {}
@@ -22,54 +23,80 @@ def parse_one_hosts_info(info):
 def inventory_one_hosts(info):
     inventory = []
     hostinfo = parse_one_hosts_info(info)
-    for host_name in hostinfo.keys():
-       if hostinfo[host_name]["state"] in [ "on", "update"]:
-          inventory.append((host_name, "one_hosts_default_levels"))
-  
+    if "individual" in one_hosts_inventory_mode:
+        for host_name in hostinfo.keys():
+           if hostinfo[host_name]["state"] in [ "on", "update"]:
+              inventory.append((host_name, "one_hosts_default_levels"))
+    if "summary" in one_hosts_inventory_mode: 
+        inventory.append(("SUMMARY", "one_hosts_default_levels"))
     return inventory
 
 
 def check_one_hosts(item, params, info):
     hostinfo = parse_one_hosts_info(info)
-    state = 3
+    print item
+    state = 0 
+
+    # Handle the summary of all hypervisors
+    if item == "SUMMARY":
+        alloc_cpu = 0
+        total_cpu = 0
+        used_mem  = 0
+        total_mem = 0
+        # run our own numbers here to avoid rounding errors. 
+        # it might be useless.
+        for host_name in hostinfo.keys():
+            alloc_cpu = alloc_cpu + int(hostinfo[host_name]["perf"]["cpu"][0])
+            total_cpu = total_cpu + int(hostinfo[host_name]["perf"]["cpu"][1])
+            h_used_mem, h_total_mem = hostinfo[host_name]["perf"]["mem"]
+            used_mem  = used_mem  + int(h_used_mem)
+            total_mem = total_mem + int(h_total_mem)
+        
+
+    # Handle the single hypervisors
     for host_name in hostinfo.keys():
        if host_name == item:
            state = 0
-           # Check on CPU slots allocated.
-           fudge = hostinfo[host_name]["perf"]["cpu"][2].replace("(","").replace(")","").replace("%","")
-           alloc_cpu = int(fudge)
+           alloc_cpu = int(hostinfo[host_name]["perf"]["cpu"][0])
+           total_cpu = int(hostinfo[host_name]["perf"]["cpu"][1])
            free_cpu = 100 - alloc_cpu
-           if   alloc_cpu >= params["alloc_cpu"][1]:
-             state = max(state, 2)
-           elif alloc_cpu >= params["alloc_cpu"][0]:
-             state = max(state, 1)
     
-           msg = "%d%% of CPU slots allocated" % alloc_cpu + "!" * state
 
-           used_mem, total_mem = hostinfo[host_name]["perf"]["mem"]
-           used_mem = int(used_mem)
-           total_mem = int(total_mem)
-           free_mb  = saveint((total_mem - used_mem) / 1024)
-           used_pct = used_mem * 100 / float(total_mem)
-           msg = msg + ", %0.2f%% of memory allocated" % used_pct
+       # Cpu alerting
 
-           if   used_pct >= params["used_mem"][1]:
-              state = max(state, 2)
-              msg = msg + "!" * state
-           elif used_pct >= params["used_mem"][0]:
-              state = max(state, 1)
-              msg = msg + "!" * state
+    cpu_pct = alloc_cpu * 100 / float(total_cpu)
+    msg = "%d%% of CPU slots allocated" % cpu_pct + "!" * state
 
-#           perfdata = [("length", length, warn, crit)]
+    if   cpu_pct >= params["alloc_cpu"][1]:
+       state = max(state, 2)
+    elif cpu_pct >= params["alloc_cpu"][0]:
+       state = max(state, 1)
 
-           perfdata = [ 
-    ("alloc_cpu", alloc_cpu, params["alloc_cpu"][0], params["alloc_cpu"][1] ), 
+
+    # Memory alerting
+    used_mem, total_mem = hostinfo[host_name]["perf"]["mem"]
+    used_mem = int(used_mem)
+    total_mem = int(total_mem)
+    free_gb  = saveint((total_mem - used_mem) / 1024 / 1024 )
+    used_pct = used_mem * 100 / float(total_mem)
+
+    msg = msg + ", %0.2f%% (%d GB) of memory allocated" % (used_pct, free_gb)
+
+    if   used_pct >= params["used_mem"][1]:
+       state = max(state, 2)
+       msg = msg + "!" * state
+    elif used_pct >= params["used_mem"][0]:
+       state = max(state, 1)
+       msg = msg + "!" * state
+
+
+    perfdata = [ 
+    ("alloc_cpu", alloc_cpu, total_cpu, params["alloc_cpu"][0], params["alloc_cpu"][1] ), 
     ("used_mem",  used_pct, params["used_mem"][0], params["used_mem"][1])]
                       
            
-           return (state, msg, perfdata)
+    return (state, msg, perfdata)
  
-    return (3, "UNKW - Host not found in agent output")
 
 check_info["one_hosts"] = {
    "check_function"         : check_one_hosts,

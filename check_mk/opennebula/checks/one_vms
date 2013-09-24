@@ -15,6 +15,7 @@ def parse_one_vms_info(info):
      elif len(line) == 10:
          id, owner, group, descr, state, cpu_usage, mem_alloc, on_host, up_days, up_hours = line
 
+     id="one-%s" % id
      perf = {"cpu" : cpu_usage, "mem": mem_alloc }
 
      vminfo[id] = { "name": descr, "state": state, "perf" : perf }
@@ -61,7 +62,7 @@ def check_one_vms(item, _no_params, info):
 check_info["one_vms"] = {
    "check_function"         : check_one_vms,
     "inventory_function"    : inventory_one_vms,
-    "service_description"   : "VM one-%s",
+    "service_description"   : "VM Status %s",
     "has_perfdata"          : False,
 }
 
