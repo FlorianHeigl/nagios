@@ -1,0 +1,80 @@
+#!/usr/bin/python
+
+
+#<<<one_hosts>>>
+#    0 one-kvm1        -          10    250 / 400 (62%) 3.8G / 11.8G (31%) on
+
+
+one_hosts_default_levels = { 
+   "alloc_cpu" : (40.0, 60.0), 
+   "used_mem" : (15.0,  99.0),
+} 
+
+
+def parse_one_info(info):
+   hostinfo = {}
+   for line in info:
+     id, host_name, cluster, running_vms, cpu_alloc, sep, cpu_total, cpu_pct, kb_alloc, sep, kb_total, state = line
+     perf = {"vms" : running_vms, "cpu" : (cpu_alloc, cpu_total, cpu_pct), "mem" : (kb_alloc, kb_total)}
+     hostinfo[host_name] = { "cluster" : cluster, "perf" : perf, "state" : state}
+   return hostinfo
+
+def inventory_one_hosts(info):
+    inventory = []
+    hostinfo = parse_one_info(info)
+    for host_name in hostinfo.keys():
+       if hostinfo[host_name]["state"] in [ "on", "update"]:
+          inventory.append((host_name, "one_hosts_default_levels"))
+  
+    return inventory
+
+
+def check_one_hosts(item, params, info):
+    hostinfo = parse_one_info(info)
+    state = 3
+    for host_name in hostinfo.keys():
+       if host_name == item:
+           state = 0
+           # Check on CPU slots allocated.
+           fudge = hostinfo[host_name]["perf"]["cpu"][2].replace("(","").replace(")","").replace("%","")
+           alloc_cpu = int(fudge)
+           free_cpu = 100 - alloc_cpu
+           if   alloc_cpu >= params["alloc_cpu"][1]:
+             state = max(state, 2)
+           elif alloc_cpu >= params["alloc_cpu"][0]:
+             state = max(state, 1)
+    
+           msg = "%d%% of CPU slots allocated" % alloc_cpu + "!" * state
+
+           used_mem, total_mem = hostinfo[host_name]["perf"]["mem"]
+           used_mem = int(used_mem)
+           total_mem = int(total_mem)
+           free_mb  = saveint((total_mem - used_mem) / 1024)
+           used_pct = used_mem * 100 / float(total_mem)
+           msg = msg + ", %0.2f%% of memory allocated" % used_pct
+
+           if   used_pct >= params["used_mem"][1]:
+              state = max(state, 2)
+              msg = msg + "!" * state
+           elif used_pct >= params["used_mem"][0]:
+              state = max(state, 1)
+              msg = msg + "!" * state
+
+#           perfdata = [("length", length, warn, crit)]
+
+           perfdata = [ 
+    ("alloc_cpu", alloc_cpu, params["alloc_cpu"][0], params["alloc_cpu"][1] ), 
+    ("used_mem",  used_pct, params["used_mem"][0], params["used_mem"][1])]
+                      
+           
+           return (state, msg, perfdata)
+ 
+    return (3, "UNKW - Host not found in agent output")
+
+check_info["one_hosts"] = {
+   "check_function"         : check_one_hosts,
+    "inventory_function"    : inventory_one_hosts,
+    "service_description"   : "OpenNebula Hypervisor %s",
+    "has_perfdata"          : False,
+}
+

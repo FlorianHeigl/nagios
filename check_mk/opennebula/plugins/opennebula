@@ -1,0 +1,8 @@
+#!/bin/bash
+
+echo "<<<one_vms>>>"
+su - oneadmin -c "onevm list | tail -n +2"
+
+
+echo "<<<one_hosts>>>"
+su - oneadmin -c "onehost list -k | tail -n +2"
