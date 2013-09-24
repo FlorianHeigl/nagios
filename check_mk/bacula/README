@@ -1,0 +1,17 @@
+
+
+All these files must be placed in $MK_LIBDIR/local - 
+and MK_LIBDIR is defined in the Agent script itself.
+
+On some OS it'll just be set to /change/me - so you really need to check.
+
+Set the MK_LIBDIR to a place that suits well with your distro.
+
+i.e. 
+most linux: /usr/lib/check_mk_agent
+FreeBSD /usr/local/lib/check_mk_agent
+HP-UX /opt/check_mk/lib
+...
+
+then create a "local" folder in there and copy in the scripts.
+They need to be executable.
