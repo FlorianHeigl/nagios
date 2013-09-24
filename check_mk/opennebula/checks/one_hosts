@@ -11,7 +11,7 @@ one_hosts_default_levels = {
 } 
 
 
-def parse_one_info(info):
+def parse_one_hosts_info(info):
    hostinfo = {}
    for line in info:
      id, host_name, cluster, running_vms, cpu_alloc, sep, cpu_total, cpu_pct, kb_alloc, sep, kb_total, state = line
@@ -21,7 +21,7 @@ def parse_one_info(info):
 
 def inventory_one_hosts(info):
     inventory = []
-    hostinfo = parse_one_info(info)
+    hostinfo = parse_one_hosts_info(info)
     for host_name in hostinfo.keys():
        if hostinfo[host_name]["state"] in [ "on", "update"]:
           inventory.append((host_name, "one_hosts_default_levels"))
@@ -30,7 +30,7 @@ def inventory_one_hosts(info):
 
 
 def check_one_hosts(item, params, info):
-    hostinfo = parse_one_info(info)
+    hostinfo = parse_one_hosts_info(info)
     state = 3
     for host_name in hostinfo.keys():
        if host_name == item:

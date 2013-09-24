@@ -7,7 +7,7 @@
 
 
 
-def parse_one_info(info):
+def parse_one_vms_info(info):
    vminfo = {}
    for line in info:
      if   len(line) == 9:
@@ -22,7 +22,7 @@ def parse_one_info(info):
 
 def inventory_one_vms(info):
     inventory = []
-    vminfo = parse_one_info(info)
+    vminfo = parse_one_vms_info(info)
     for vm_id in vminfo.keys():
        # not inventorizing broken states like fail / unknown
        # Stefunel says only runn, so we do
@@ -34,7 +34,7 @@ def inventory_one_vms(info):
 
 
 def check_one_vms(item, _no_params, info):
-    vminfo = parse_one_info(info)
+    vminfo = parse_one_vms_info(info)
     for vm_id in vminfo.keys():
         if vm_id == item:
             vm_state = vminfo[vm_id]["state"]
