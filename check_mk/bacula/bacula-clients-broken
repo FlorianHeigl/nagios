@@ -1,0 +1,11 @@
+#!/bin/bash
+
+CLIENTS="`echo "query
+10" | bconsole -n | grep -w 0 | awk '{ if ( $3 == 0 ); printf $8" " }'`"
+
+if [[ $CLIENTS ]] ; then
+# 0 bacula-dir-connect - OK - Bacula director is accessible
+  echo "2 bacula-clients-broken - CRIT - Broken Clients found - all backups total 0Bytes! ( $CLIENTS)."
+else
+  echo "0 bacula-clients-broken - OK - No broken Clients found."
+fi
