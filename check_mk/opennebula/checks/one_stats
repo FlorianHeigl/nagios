@@ -1,0 +1,74 @@
+#!/usr/bin/python
+
+
+
+#<<<one_stats>>>
+#last_id=98 running=17 pending=0
+
+
+one_stats_default_levels = {
+    # define that no more than 10 vms should be "pending"
+    # (this is an example, you can use more useful metrics!!!)
+    "pending" : 10,
+}
+
+def inventory_one_stats(info):
+    if len(info) >= 1:
+        return [(None, None)]
+
+
+def check_one_stats(item, _no_params, info):
+
+    output   = []
+    perfdata = []
+    now      = time.time()
+    wrapped  = False
+
+    # little bug here..
+    for line in info[0]:
+        counter, value = line.split("=")
+        value = int(value)
+        # This whole block should be remade if you wanna support multiple counters + levels.
+        #
+        if   counter == "last_id":
+           try:
+              timedif, persec = get_counter("one_stats.last_id", now, value)
+              per_min  = int(persec / 60)
+           except MKCounterWrapped:
+              wrapped = True
+              continue
+           output.append("VM creations: %d/min" % per_min)
+        #last_id=98 running=17 pending=0
+           perfdata.append(("launches", per_min))
+        elif counter == "running":
+           perfdata.append(("running", value))
+        elif counter == "pending":
+           crit = one_stats_default_levels["pending"]
+           if value >= crit:
+               perfdata.append(("pending", value, crit))
+               return (2, " %d VMs are in status pending" % value, perfdata)
+        #
+        # This whole block should be remade if you wanna support multiple counters + levels.
+
+
+
+    if output:
+        return (0, (" ").join(output), perfdata)
+    else:
+        return (3, "my counters are broken")
+
+
+
+
+    #timedif, per_sec = get_counter("one_stats.last_pidk
+    
+    return (3, "blah")
+
+
+# Used old style in the other checks by mistake :/
+check_info['one_stats'] = {
+    "check_function"     : check_one_stats,
+    "inventory_function" : inventory_one_stats,
+    "service_description": "OpenNebula Stats",
+    "has_perfdata"       : True,
+}
