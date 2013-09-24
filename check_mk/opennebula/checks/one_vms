@@ -1,0 +1,67 @@
+#!/usr/bin/python
+
+#<<<one_vms>>>
+#    51 oneadmin oneadmin tty-51          fail    0    384M              1d 16h50
+#    52 oneadmin oneadmin tty-52          stop    0    384M              1d 20h41
+#    74 oneadmin oneadmin tty-74          runn    0    384M one-kvm1     1d 20h36
+
+
+
+def parse_one_info(info):
+   vminfo = {}
+   for line in info:
+     if   len(line) == 9:
+         id, owner, group, descr, state, cpu_usage, mem_alloc, up_days, up_hours = line
+     elif len(line) == 10:
+         id, owner, group, descr, state, cpu_usage, mem_alloc, on_host, up_days, up_hours = line
+
+     perf = {"cpu" : cpu_usage, "mem": mem_alloc }
+
+     vminfo[id] = { "name": descr, "state": state, "perf" : perf }
+   return vminfo
+
+def inventory_one_vms(info):
+    inventory = []
+    vminfo = parse_one_info(info)
+    for vm_id in vminfo.keys():
+       # not inventorizing broken states like fail / unknown
+       # Stefunel says only runn, so we do
+       if vminfo[vm_id]["state"] in [ "runn" ]:
+          #inventory.append((vm_id, vminfo[vm_id]["name"]))
+          inventory.append((vm_id, None))
+  
+    return inventory
+
+
+def check_one_vms(item, _no_params, info):
+    vminfo = parse_one_info(info)
+    for vm_id in vminfo.keys():
+        if vm_id == item:
+            vm_state = vminfo[vm_id]["state"]
+            msg="VM %s has status \"%s\"" % (vminfo[vm_id]["name"], vm_state)
+            if   vm_state in [ "runn", "stop", "shut" ]:
+                state = 0
+            elif vm_state == [ "prol", "pend" ]:
+                # add a check against the duration in this state later
+                # see: up days/hours
+                state = 0
+            elif vm_state == "unkw":
+                state = 3
+            elif vm_state == "fail":
+                state = 2
+            else:
+                state = 3
+                msg = "Error in check, state %s not supported" % vm_state
+            return (state, msg)
+            
+                      
+    return (3, "Unknown, VM not found in agent output")
+ 
+
+check_info["one_vms"] = {
+   "check_function"         : check_one_vms,
+    "inventory_function"    : inventory_one_vms,
+    "service_description"   : "VM one-%s",
+    "has_perfdata"          : False,
+}
+
