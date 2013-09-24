@@ -1,0 +1,65 @@
+#!/usr/bin/python
+# -*- encoding: utf-8; py-indent-offset: 4 -*-
+
+# based upon 'qemu' from
+# 12/2010 Matthias Henze
+#
+# updated for libvirtd (virsh) by
+# Jonathan Mills 09/2011
+# 
+# Wiki Documentation
+# https://geni-orca.renci.org/trac/wiki/OMDqemu
+
+# Example output from agent:
+# <<<qemu>>>
+# 4 i-4B9008BE running 2048 4.0 2.7
+# 5 i-44F608B6 running 2048 0.0 0.7
+
+
+
+
+# inventory
+def inventory_qemu(checkname, info):
+    inventory = []
+    for line in info:
+        if line[2] == "running":  # only VM's running while inventory are monitored !
+            vm = line[1] # we want to capture hostname, not vm id here
+
+	    # Fix annoying OpenStack misnaming of VMs
+	    name = vm.split('-')
+	    if name[0] == "instance":
+		name[0] = "i"
+	    vm = '-'.join(name)
+	    ##
+
+            inventory.append( (vm, None) )
+    return inventory
+
+# check
+def check_qemu(name, param, info):
+    for line in info:
+        perfdata = []
+
+	vm = line[1]
+	host = vm.split('-')
+	if host[0] == "instance":
+	    host[0] = "i"
+	vm = '-'.join(host)
+	
+        if vm == name:
+            item = line[0]
+            status = line[2]
+            ram = line[3]
+            infotext = "%s  (id: %s, ram: %s MB)" % (status, item, ram)
+            if status == "running":
+                perfdata.append( ( "CPU%", int(round(float(line[4]))) ) )
+                perfdata.append( ( "RAM%", int(round(float(line[5]))) ) )
+                return (0, "OK - status is " + infotext, perfdata)
+            else:
+                return (2, "CRITICAL - status is " + infotext, perfdata)
+    #return (3, "UNKNOWN - VM %s not found in agent output" % item) 
+    return (3, "UNKNOWN - VM not found in agent output") 
+
+# declare the check to Check_MK
+check_info['qemu'] = \
+        (check_qemu, "VM %s", 1, inventory_qemu)
