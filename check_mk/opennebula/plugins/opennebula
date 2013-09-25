@@ -1,8 +1,23 @@
 #!/bin/bash
 
+VMS=`su - oneadmin -c "onevm list | tail -n +2"`
+HOSTS=`su - oneadmin -c "onehost list -k | tail -n +2"`
 echo "<<<one_vms>>>"
-su - oneadmin -c "onevm list | tail -n +2"
+echo "$VMS"
 
 
 echo "<<<one_hosts>>>"
-su - oneadmin -c "onehost list -k | tail -n +2"
+echo "$HOSTS"
+
+echo "<<<one_stats>>>"
+last_id=`echo "$VMS" | tail -1 | awk '{print $1}'`
+count_running=`echo "$VMS" | grep -c run`
+count_pending=`echo "$VMS" | grep -c pend`
+# don't really need them yet
+#count_prolog=`echo  "$VMS" | grep -c prol`
+#count_failed=`echo  "$VMS" | grep -c fail`
+#count_stopped=`echo "$VMS" | grep -c stop`
+#count_unknown=`echo "$VMS" | grep -c unkn`
+
+
+echo last_id=$last_id running=$count_running pending=$count_pending
