@@ -29,8 +29,8 @@ def parse_one_hosts_info(info):
      elif len(line) == 13:
          id, host_name, cluster, running_vms, cpu_alloc, bs, cpu_total, bs, kb_alloc, bs, kb_total, bs, state = line
 
-     kb_alloc = int(kb_alloc)
-     kb_total = int(kb_total)
+     kb_alloc = saveint(kb_alloc)
+     kb_total = saveint(kb_total)
      perf = {"vms" : running_vms, "cpu" : (cpu_alloc, cpu_total), "mem" : (kb_alloc, kb_total)}
      hostinfo[host_name] = { "cluster" : cluster, "perf" : perf, "state" : state}
    return hostinfo
@@ -60,23 +60,30 @@ def check_one_hosts(item, params, info):
         # run our own numbers here to avoid rounding errors. 
         # it might be useless.
         for host_name in hostinfo.keys():
-            alloc_cpu = alloc_cpu + int(hostinfo[host_name]["perf"]["cpu"][0])
-            total_cpu = total_cpu + int(hostinfo[host_name]["perf"]["cpu"][1])
+            alloc_cpu = alloc_cpu + saveint(hostinfo[host_name]["perf"]["cpu"][0])
+            total_cpu = total_cpu + saveint(hostinfo[host_name]["perf"]["cpu"][1])
             h_used_mem, h_total_mem = hostinfo[host_name]["perf"]["mem"]
-            used_mem  = used_mem  + int(h_used_mem)
-            total_mem = total_mem + int(h_total_mem)
+            used_mem  = used_mem  + saveint(h_used_mem)
+            total_mem = total_mem + saveint(h_total_mem)
         
 
     # Handle the single hypervisors
     if item != "SUMMARY":
       for host_name in hostinfo.keys():
          if host_name == item:
-           alloc_cpu = int(hostinfo[host_name]["perf"]["cpu"][0])
-           total_cpu = int(hostinfo[host_name]["perf"]["cpu"][1])
-           free_cpu  = 100 - alloc_cpu
-           used_mem, total_mem = hostinfo[host_name]["perf"]["mem"]
-    
+             # status alerting
+             # Bail out immediately if this host is down.
+             # I didn't have this in the first version, I hope this 
+             # works fine anyway.
+             if hostinfo[host_name]["state"] not in [ "on", "update"]:
+                 state = max(state, 2)
+                 return (2, "Host status is %s" % hostinfo[host_name]["state"], [])
 
+             alloc_cpu = int(hostinfo[host_name]["perf"]["cpu"][0])
+             total_cpu = int(hostinfo[host_name]["perf"]["cpu"][1])
+             free_cpu  = 100 - alloc_cpu
+             used_mem, total_mem = hostinfo[host_name]["perf"]["mem"]
+    
     # Cpu alerting
     cpu_pct = alloc_cpu * 100 / float(total_cpu)
     cpu_cnt = total_cpu / 100
