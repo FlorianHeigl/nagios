@@ -50,10 +50,12 @@ def check_qemu(name, param, info):
             item = line[0]
             status = line[2]
             ram = line[3]
-            infotext = "%s  (id: %s, ram: %s MB)" % (status, item, ram)
+            infotext = "%s  (id: %s)" % (status, item)
             if status == "running":
-                perfdata.append( ( "CPU%", int(round(float(line[4]))) ) )
-                perfdata.append( ( "RAM%", int(round(float(line[5]))) ) )
+		# 4 i-4B9008BE running 2048 4.0 2.7
+                if len(line) == 6 or len(line) == 5:
+                    perfdata.append( ( "CPU%", int(round(float(line[4]))) ) ) 
+                perfdata.append( ( "MB", int(round(float(line[3]))) ) )
                 return (0, "OK - status is " + infotext, perfdata)
             else:
                 return (2, "CRITICAL - status is " + infotext, perfdata)
