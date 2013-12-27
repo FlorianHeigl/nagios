@@ -5,14 +5,10 @@
 # if there's missing replicas
 # or CRITICAL if there's no replicas left for some data
 
-# TODO: 
-# needs to sys.exit with "state" (otherwise Nagios will show OK!!!)
-
 # HOWTO:
-# needs MooseFS libs
+# needs MooseFS libs (included)
 # adjust your "masterhost" below
-# access is via standard port,
-# moosefs does not authenticate this, so it should just work.
+# access is via standard port, no auth needed(!)
 
 # CAVEAT: 
 # Doesn't comply to Nagios plugin dev guide (no -h support)
@@ -20,6 +16,7 @@
 
 
 from moosefs import MooseFS
+import sys
 
 weavers = MooseFS(masterhost='192.168.10.190')
 matrix  =  weavers.mfs_info()['matrix']
@@ -76,4 +73,5 @@ if state == 0:
 
 print nagios_state_names[state] + " - " + msg
 
+sys.exit(state)
 
