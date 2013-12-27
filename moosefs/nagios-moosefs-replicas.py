@@ -21,7 +21,7 @@
 
 from moosefs import MooseFS
 
-weavers = MooseFS(masterhost='192.168.10.190')
+weavers = MooseFS(masterhost='192.168.10.162')
 matrix  =  weavers.mfs_info()['matrix']
 
 
@@ -65,6 +65,9 @@ nagios_state_names = {
     1 : "WARN",
     2 : "CRIT",
     3 : "UNKW" }
+
+if state == 0:
+   msg = "No errors"
 
 print nagios_state_names[state] + " - " + msg
 
