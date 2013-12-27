@@ -21,13 +21,21 @@
 
 from moosefs import MooseFS
 
-weavers = MooseFS(masterhost='192.168.10.162')
+weavers = MooseFS(masterhost='192.168.10.190')
 matrix  =  weavers.mfs_info()['matrix']
 
 
+# For easy reuse of check in Check_MK
+nagios_state_names = { 
+    0 : "OK",
+    1 : "WARN",
+    2 : "CRIT",
+    3 : "UNKW" }
+
+
 state = 0
-goal = 0
-msg = ""
+goal  = 0
+msg   = ""
 
 for goal_data in matrix:
 
@@ -44,9 +52,11 @@ for goal_data in matrix:
       i = 0
       undergoal = 0
 
+      # slide through the matrix row, checking for non-zero entries
       while i < cur_goal:
          undergoal = undergoal + chunks_per_goal[i]
          i = i + 1
+
       if undergoal:
          # lost data:
          if   chunks_per_goal[0] > 0:
@@ -60,12 +70,7 @@ for goal_data in matrix:
          state = max(state, 0)
 
 
-nagios_state_names = { 
-    0 : "OK",
-    1 : "WARN",
-    2 : "CRIT",
-    3 : "UNKW" }
-
+# Add a message in case there were no errors.
 if state == 0:
    msg = "No errors"
 

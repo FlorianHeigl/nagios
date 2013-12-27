@@ -1,0 +1,13 @@
+The Nagios check is released under BSD license for your enjoyable tinkering.
+(The Check_MK pieces will probably go as GPL to be more in line with Check_MK)
+
+----------------
+
+The source URL for python-moosefs is:
+https://github.com/techhat/python-moosefs/blob/master/moosefs.py
+
+The license for python-moosefs reads:
+
+Intended to be compatible with the MooseFS licence,
+
+GPLv3
