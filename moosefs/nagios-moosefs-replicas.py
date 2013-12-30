@@ -7,19 +7,46 @@
 
 # HOWTO:
 # needs MooseFS libs (included)
-# adjust your "masterhost" below
 # access is via standard port, no auth needed(!)
 
 # CAVEAT: 
-# Doesn't comply to Nagios plugin dev guide (no -h support)
 # All other MooseFS checks I write will be directly for Check_MK
 
 
 from moosefs import MooseFS
 import sys
 
-weavers = MooseFS(masterhost='192.168.10.190')
-matrix  =  weavers.mfs_info()['matrix']
+
+def sh_syntax():
+   print """
+
+Syntax:
+nagios-moosefs-replicas.py [-H <mfsmaster hostname>]
+
+If the mfsmaster is not specified, the check will try to default to 'mfsmaster'
+
+"""
+
+
+
+if   len(sys.argv) == 2 and "-h" in sys.argv:
+    sh_syntax()
+    sys.exit(5)
+elif len(sys.argv) == 3 and "-H" == sys.argv[1]:
+     mfsmaster=sys.argv[2] 
+else:
+    # Fall back to the default hostname, if none other was given.
+    mfsmaster="mfsmaster"
+
+try:
+    mfsobj = MooseFS(masterhost=mfsmaster)
+except:
+    print "UNKNOWN - Error occured connecting to mfsmaster"
+    # Raise should only be done if connected to a terminal, so it doesn't spill into nagios.
+    #raise
+    sys.exit(3)
+
+matrix  =  mfsobj.mfs_info()['matrix']
 
 
 # For easy reuse of check in Check_MK
