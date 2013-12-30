@@ -28,7 +28,7 @@ If the mfsmaster is not specified, the check will try to default to 'mfsmaster'
 """
 
 
-
+# Handle arguments, help or hostname to check
 if   len(sys.argv) == 2 and "-h" in sys.argv:
     sh_syntax()
     sys.exit(5)
@@ -38,6 +38,7 @@ else:
     # Fall back to the default hostname, if none other was given.
     mfsmaster="mfsmaster"
 
+# Try building a connection, crash-land on any error.
 try:
     mfsobj = MooseFS(masterhost=mfsmaster)
 except:
@@ -46,6 +47,7 @@ except:
     #raise
     sys.exit(3)
 
+# if connection succeeded, load the table of replicas.
 matrix  =  mfsobj.mfs_info()['matrix']
 
 
@@ -61,6 +63,8 @@ state = 0
 goal  = 0
 msg   = ""
 
+
+# parse the table per-goal (horizontally)
 for goal_data in matrix:
 
     cur_goal = goal
@@ -76,7 +80,8 @@ for goal_data in matrix:
       i = 0
       undergoal = 0
 
-      # slide through the matrix row, checking for non-zero entries
+      # slide through the matrix row, checking for non-zero entries (vertically)
+      # only look at entries _less_ than the designated goal.
       while i < cur_goal:
          undergoal = undergoal + chunks_per_goal[i]
          i = i + 1
