@@ -56,11 +56,16 @@ fi
 check_access()
 {
 # check for client access issue
+if echo "$erg" | grep "WARNING:.*selfcheck.*failed" > /dev/null ; then
+   msg="$msg Client is configured for backups, but Amanda failed to connect."
+   max $state 2
+fi
 if echo "$erg" | grep "ERROR: NAK" > /dev/null ; then
    msg="$msg Client is configured for backups, but they're not working."
    max $state 2
 fi
 }
+
 
 check_ok()
 {
