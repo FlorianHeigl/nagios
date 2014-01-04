@@ -64,7 +64,7 @@ check_def()
 # this needs to be check first since amanda returns ok for the client if it's not
 # even configured.
 if echo "$erg" | grep "matches neither a host nor a disk" > /dev/null ; then
-   msg="$msg Client is not configured for backups"
+   msg="$msg Client $backupclient is not configured on server"
    disabled=True
    max $state 1
 fi
@@ -88,7 +88,7 @@ check_index()
 {
 if echo "$erg" | grep "NOTE: index.*does not exist" | grep $backupclient > /dev/null; then
    msg="$msg No initial backup for client."
-   max $state 2
+   max $state 1
 fi
 }
 
