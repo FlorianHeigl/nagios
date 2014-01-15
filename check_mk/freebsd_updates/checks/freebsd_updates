@@ -1,0 +1,37 @@
+#!/usr/bin/python
+
+#Output
+#<<<freebsd_updates>>>
+#release: 9.1-RELEASE-p3
+#security:       27
+
+
+def inventory_freebsd_updates(info):
+    return [ (None, None) ]
+
+
+def check_freebsd_updates(_no_item, _no_params, info):
+
+    for line in info:
+        key, val = line
+        #if   key == "release:":
+        #   osver = val
+        if key == "security:":
+           patches = int(val)
+
+    if  patches > 0:
+       state = 2
+       msg = "%s security updates" % patches
+    else:
+       state = 0
+       msg = "no security updates"
+    
+    return state, msg
+
+
+check_info["freebsd_updates"] = {
+    "check_function"      : check_freebsd_updates,
+    "inventory_function"  : inventory_freebsd_updates,
+    "service_description" : "FreeBSD Updates",
+    "has_perfdata"        : "false",
+}
