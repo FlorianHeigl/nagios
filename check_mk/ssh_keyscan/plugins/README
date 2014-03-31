@@ -1,0 +1,16 @@
+
+
+There are two agent modes:
+
+For checking over-the-wire using ssh-keyscan, there's one agent plugin.
+This needs to be given a list of hosts to scan and will then do it's thing.
+It's built as a piggyback agent so the services are assigned to the correct
+hosts.
+This can actually trip MITM attacks as the comparism of whatever is seen
+over the wire is done on the monitoring server.
+
+Alternatively you can use a per-node version that just greps the right
+keys in /etc/ssh and sends it with the normal agent data.
+This is just fine - *except* for a different use case.
+A MITM won't be recognized, but it will at least detect sloppy sysadmins 
+migrating a server and forgetting to restore the old keys.
