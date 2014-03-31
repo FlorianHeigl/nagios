@@ -1,0 +1,36 @@
+#!/usr/bin/python
+
+# Agent output
+
+def inventory_ssh_keyscan(info):
+    inventory = []
+
+    for line in info:
+        keytype, key = line
+        if keytype.lower() in [ "rsa", "dsa", "ecdsa" ]:
+            inventory.append( (keytype, { "hash" : key } ))
+
+    #print inventory
+    return inventory
+
+
+def check_ssh_keyscan(item, params, info):
+    for line in info:
+        keytype, key = line
+        if keytype.lower() == item:
+            known_key = params["hash"]
+            if known_key == key:
+                return 0, "OK - Key is unchanged" 
+            else:
+                return 2, "CRIT - Key does not match recorded key"
+     
+    return 3, "UNKNOWN - Key not found in Agent data"
+
+
+
+check_info["ssh_keyscan"] = {
+    "check_function"     : check_ssh_keyscan,
+    "inventory_function" : inventory_ssh_keyscan,
+    "service_description": "SSH Hoskey %s",
+    "has_perfdata"       : False,
+}

@@ -52,8 +52,8 @@ matrix  =  mfsobj.mfs_info()['matrix']
 
 
 # For easy reuse of check in Check_MK
-if not nagios_state_names:
-    nagios_state_names = { 
+#if not nagios_state_names:
+nagios_state_names = { 
         0 : "OK",
         1 : "WARN",
         2 : "CRIT",
