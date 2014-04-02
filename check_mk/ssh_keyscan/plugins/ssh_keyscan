@@ -1,0 +1,32 @@
+#!/bin/sh
+
+# Please add a list of hosts to scan in this file
+hostlist=$MK_CONFDIR/ssh_keyscan.txt
+
+test -r "$hostlist" || exit 1
+
+
+conn()
+{
+
+  ping -i 2 -t 2 -c 1 $node 2>/dev/null 1>/dev/null
+  return $?
+
+}
+
+
+getkey()
+{
+# # hostname.domain.tld SSH-2.0-OpenSSH_5.8p2_hpn13v11 FreeBSD-20110503
+   OUT=`ssh-keyscan -t dsa $node 2>&1`
+   HEADER=` echo $OUT | sed 's/^# /<<<</' | sed 's/ SSH.*/>>>>/' | head -1` 
+      KEY=` echo $OUT | sed 's/.*ssh-dss //' `
+   echo $HEADER
+   echo "<<<ssh_keyscan>>>"
+   echo "dsa $KEY"
+}
+
+for node in `cat $hostlist` ; do
+   conn   &&
+   getkey
+done
