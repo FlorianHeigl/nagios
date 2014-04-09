@@ -1,0 +1,64 @@
+#!/usr/bin/python
+
+# Agent output
+
+# known good is used more in a sense "not totally deadly".
+openssl_version_known_good = [ 
+  "OpenSSL 0.9.8",
+  "OpenSSL 1.0.1c-freebsd",
+  "OpenSSL 1.0.1g",
+]
+
+# actually, there could be multiple versions installed
+# it's what I found on the one still-vulnerable box.
+# Patches welcome :)
+def inventory_openssl_version(info):
+    has_openssl = False
+
+    inventory = []
+    for line in info:
+        ssl_version = line[:2]
+        release = line[2:]
+
+        if ssl_version[0].lower().startswith("openssl"):
+            has_openssl = True
+
+    if has_openssl == True:
+        inventory = [( None, "openssl_version_known_good" )]
+
+    return inventory
+
+
+def check_openssl_version(item, params, info):
+
+    state = 0
+    found = False
+    msg = "OpenSSL version flagged as safe"
+
+    for line in info:
+        ssl_version = (" ").join(line[:2])
+
+        for ok_version in params:
+            if ssl_version.startswith(ok_version):
+                state = max(state, 0)
+                # stop looking for an ok version if we found it.
+                # no elegance at 4am
+                found = True
+        # also option to go to warn if SSL Lib is >N months
+        #... put here.
+
+        # if this was reached, we found a problem
+        if not found:
+            state = max(state, 2)
+            msg = "OpenSSL Version %s found" % ssl_version
+        
+        
+    return state, msg
+     
+
+check_info["openssl_version"] = {
+    "check_function"     : check_openssl_version,
+    "inventory_function" : inventory_openssl_version,
+    "service_description": "OpenSSL Version",
+    "has_perfdata"       : False,
+}
