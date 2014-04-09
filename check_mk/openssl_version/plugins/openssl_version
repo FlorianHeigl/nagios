@@ -1,0 +1,7 @@
+#!/bin/sh
+
+
+if which openssl >/dev/null ; then
+    echo "<<<openssl_version>>>"
+    openssl version
+fi
