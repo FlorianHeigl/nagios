@@ -1,0 +1,26 @@
+#!/bin/sh
+
+auditcmd=""
+# use portaudit if it's found
+if type portaudit > /dev/null 2>&1; then
+  auditcmd="portaudit"
+fi
+
+# overwrite with pkg is available, unless we're in migration mode
+if type pkg > /dev/null 2>&1; then
+  if ! grep "^WITHOUT_PKGNG=YES" /etc/make.conf ; then
+      auditcmd="pkg audit"
+  fi
+fi
+
+# exit if no command was available
+[ "$auditcmd" = "" ] && exit 1
+
+# check release and portaudit status
+echo '<<<freebsd_updates>>>'
+version=`uname -r`
+portsec=`${auditcmd} | grep "^Affected" | sort -u  | wc -l` 
+echo "release: $version
+security: $portsec"
+
+
