@@ -5,6 +5,11 @@
 #release: 9.1-RELEASE-p3
 #security:       27
 
+target_releases = [ 
+  "9.1-RELEASE-p12", 
+  "8.3-RELEASE-p16", 
+  "9.2-RELEASE", 
+]
 
 def inventory_freebsd_updates(info):
     return [ (None, None) ]
@@ -12,19 +17,30 @@ def inventory_freebsd_updates(info):
 
 def check_freebsd_updates(_no_item, _no_params, info):
 
+    msg = ""
+
     for line in info:
         key, val = line
-        #if   key == "release:":
-        #   osver = val
+        if   key == "release:":
+           osver = val
+           osmsg   = "system is running %s" % val
+           if val not in target_releases:
+               state = 2
+               osmsg = osmsg + "!!"
+           else:
+               state = 0
+
         if key == "security:":
            patches = int(val)
 
     if  patches > 0:
-       state = 2
-       msg = "%s security updates" % patches
+       state = max(state, 2)
+       patchmsg = "%s security updates for ports!!" % patches
     else:
-       state = 0
-       msg = "no security updates"
+       state = max(state, 0)
+       patchmsg = "no security updates for ports"
+
+    msg = osmsg + ", " + patchmsg
     
     return state, msg
 
