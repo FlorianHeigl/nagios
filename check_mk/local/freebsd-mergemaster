@@ -1,0 +1,19 @@
+#!/bin/sh
+
+# check that will alert with a WARN if there are any
+# files leftover after or during an update.
+# 
+
+UNMERGED=`grep -l -e "^<<<<<<" -e "^>>>>>>" -R /etc`
+if [ $? = 0 ];
+  then
+    status=1
+    msg="WARN - Unmerged files in /etc found"
+else
+  status=0
+    msg="OK - No unmerged Files found"
+fi
+
+
+echo "${status} freebsd-mergemaster - ${msg}"
+
