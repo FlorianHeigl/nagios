@@ -1,0 +1,35 @@
+#!/usr/bin/python
+
+
+
+# ucarp_addr role ucarp_if ucarp_src
+
+
+def inventory_ucarp_status(info):
+    inventory =[]
+    for line in info:
+        if len(line) == 4:
+            ucarp_addr, role, ucarp_if, ucarp_src = line
+            inventory.append((ucarp_addr, [ role ]))
+    return inventory
+
+
+def check_ucarp_status(item, params, info):
+    for line in info:
+        ucarp_addr, role, ucarp_if, ucarp_src = line
+        target_role = params[0]
+        if ucarp_addr == item:
+            if role == target_role:
+                state = 0
+            else:
+                state = 1
+        return state, "uCARP role is %s (On %s/%s)" % (role, ucarp_if, ucarp_src)
+    return 2, "Virtual IP not found in Agent output" 
+
+
+
+check_info['ucarp_status'] = {
+    "check_function"     : check_ucarp_status,
+    "inventory_function" : inventory_ucarp_status,
+    "service_description": "Virtual IP %s",
+}

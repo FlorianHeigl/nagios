@@ -1,0 +1,21 @@
+#!/bin/sh
+
+. /etc/rc.conf
+
+if [ "$ucarp_enable" != "YES" ] ; then
+    exit 0
+fi
+
+
+echo '<<<ucarp_status>>>'
+role="slave"
+
+ifconfig $ucarp_if | grep $ucarp_addr > /dev/null
+if [ $? = 0 ]; then
+    role="master"
+fi
+
+# key: virtual IP 
+# allows adding support for multiple ucarp virtual IPs
+#      ucarp_addr  role  ucarp_if  ucarp_src
+echo "$ucarp_addr $role $ucarp_if $ucarp_src"
