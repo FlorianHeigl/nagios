@@ -1,0 +1,44 @@
+#!/bin/sh
+
+#      pf_enable="YES"
+#      pf_rules="/usr/local/etc/pf.conf"
+
+. /etc/defaults/rc.conf
+. /etc/rc.conf
+
+
+status=0
+msg="OK - Firewall is running"
+
+
+check_rulefile()
+{
+  pfctl -nf $pf_rules > /dev/null
+
+  if [ $? != 0 ] && [ $status -lt $? ]; then
+    status=1
+    msg="WARN - Firewall ruleset is broken"
+  fi
+  export status msg
+}
+
+
+check_node()
+{
+  test -c /dev/pf
+  if [ $? != 0 ]; then 
+      status=2
+      msg="CRIT - Firewall is stopped"
+  fi
+  export status msg
+
+}
+
+
+if [ "pf_enable" = "YES" ]; then
+    check_rulefile
+    check_node
+fi
+
+
+echo "${status} FreeBSD_PF - ${msg}"
