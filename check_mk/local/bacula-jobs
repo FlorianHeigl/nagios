@@ -1,0 +1,26 @@
+#!/bin/bash
+
+#"${status} bacula-dir-connect - ${txt}"
+
+type bconsole 2>&1 >/dev/null || exit 0
+
+jobs=$(echo "status dir" | bconsole -n  | egrep -e "is.*on Storage" -e "is.*on Client" -e running)
+
+if echo "$jobs"  | grep -i "no running" > /dev/null ; then
+    echo "0 bacula-jobs - OK - no running jobs"
+    exit 0
+fi
+
+num_run=$( echo "$jobs" | grep running | wc -l )
+num_waiting=$( echo "$jobs" | grep waiting | wc -l )
+
+if [ $num_run = 0 ] && [ $num_waiting -ge 0 ]; then
+    echo "2 bacula-jobs - CRIT - all jobs are waiting"
+    exit 2
+# could add perfdata here, if you need it....
+else 
+    echo "0 bacula-jobs - OK - $num_run running jobs, $num_waiting waiting jobs"
+    exit 0
+fi
+
+
