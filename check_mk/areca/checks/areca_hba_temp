@@ -93,7 +93,7 @@ def inventory_areca_hba_temp(info):
            sensor = line[1].split(" ")[0]
         else:
            sensor = line[1]
-        inventory.append([ sensor, "areca_hba_temp_default_levels" ])
+        inventory.append((sensor, "areca_hba_temp_default_levels"))
     return inventory
 
 
