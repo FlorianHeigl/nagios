@@ -56,6 +56,8 @@ def check_areca_hba_ldisks(item, _no_params, info):
                 # I have a cold, no idea how to correctly float this boat.
                 pct = int(vsf_rbld) / 10
                 msg   = msg + " - %d%% (%d/%d GB) done" % (pct, reb_gb, size_gb)
+            elif vsf_state =="Degraded":
+                state = 1
             else:
                 msg = msg + " - Unhandled state"
             return (state, nagios_state_names[state] + " - " +  msg)
