@@ -26,7 +26,7 @@ def check_freebsd_updates(_no_item, _no_params, info):
            osmsg   = "system is running %s" % val
            if val not in target_releases:
                state = 2
-               osmsg = osmsg + "!!"
+               osmsg = osmsg + "(!!)"
            else:
                state = 0
 
@@ -35,11 +35,12 @@ def check_freebsd_updates(_no_item, _no_params, info):
 
     if  patches > 0:
        state = max(state, 2)
-       patchmsg = "%s security updates for ports!!" % patches
+       patchmsg = "%s security updates for ports(!!)" % patches
     else:
        state = max(state, 0)
        patchmsg = "no security updates for ports"
 
+    # Bug: the comma doesn't show.
     msg = osmsg + ", " + patchmsg
     
     return state, msg
