@@ -3,12 +3,13 @@
 auditcmd=""
 # use portaudit if it's found
 if type portaudit > /dev/null 2>&1; then
-  auditcmd="portaudit"
+  portaudit -Fq 2>&1 > /dev/null
+  auditcmd="portaudit -a"
 fi
 
 # overwrite with pkg is available, unless we're in migration mode
 if type pkg > /dev/null 2>&1; then
-  if ! grep "^WITHOUT_PKGNG=YES" /etc/make.conf ; then
+  if ! grep "^WITHOUT_PKGNG=YES" /etc/make.conf > /dev/null; then
       auditcmd="pkg audit"
   fi
 fi
@@ -22,5 +23,3 @@ version=`uname -r`
 portsec=`${auditcmd} | grep "^Affected" | sort -u  | wc -l` 
 echo "release: $version
 security: $portsec"
-
-
