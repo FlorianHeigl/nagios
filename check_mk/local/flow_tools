@@ -1,0 +1,42 @@
+#!/bin/sh
+# Flow-tools check for FreeBSD
+# Checks if data has been received in last minutes
+
+# Maximum data age in minutes
+maxage=15
+# Minimum Size (bytes) for a file with >1 Flows
+minsize=160
+
+
+cmk-out()
+{
+    prog="flow-tools-data"
+    echo "$state $prog - $msg"
+    exit $state
+}
+
+state=0
+
+. /etc/rc.conf
+
+if ! [ "$flow_capture_enable" = "YES" ]; then
+    exit 0
+fi
+
+if ! [ -r $flow_capture_datadir ]; then
+    state=3
+    msg="UNKW - flow-tools datadir was not found."
+    cmk-out
+fi
+
+num_valid_files=`find $flow_capture_datadir -mmin -${maxage} -size +${minsize} | wc -l`
+
+if [ $num_valid_files -gt 0 ]; then
+    state=0
+    msg="OK  - flow-tools is recording flows."
+else
+    state=2
+    msg="CRIT - flow-tools has not recorded a flow in $maxage minutes."
+fi
+
+cmk-out
