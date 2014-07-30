@@ -8,16 +8,39 @@ maxage=15
 minsize=160
 
 
-cmk-out()
+cmk_out()
 {
     prog="flow-tools-data"
     echo "$state $prog - $msg"
     exit $state
 }
 
+
+nagios_out()
+{
+    echo "$msg"
+    exit $state
+}
+
+
+get_checkmode()
+{
+    echo "a"
+    # set cmk output checkmode if called as agent local check
+    if [ "X" != "X${MK_LIBDIR}" ] && [ `pwd` = "${MK_LIBDIR}/local" ]; then
+        checkmode=cmklocal
+    fi
+    if [ "ABC" = "ABC" ]; then
+        checkmode=abccheckmode
+    fi
+    export checkmode
+}
+
 state=0
 
+get_checkmode && echo $checkmode
 . /etc/rc.conf
+
 
 if ! [ "$flow_capture_enable" = "YES" ]; then
     exit 0
@@ -26,7 +49,6 @@ fi
 if ! [ -r $flow_capture_datadir ]; then
     state=3
     msg="UNKW - flow-tools datadir was not found."
-    cmk-out
 fi
 
 num_valid_files=`find $flow_capture_datadir -mmin -${maxage} -size +${minsize} | wc -l`
@@ -39,4 +61,4 @@ else
     msg="CRIT - flow-tools has not recorded a flow in $maxage minutes."
 fi
 
-cmk-out
+
