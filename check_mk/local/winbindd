@@ -1,0 +1,12 @@
+#!/bin/sh
+
+# Test user resolution via winbindd
+if /usr/bin/wbinfo -u | grep -q "administrator" ; then
+    status=0
+    statustxt="Active directory user resolution via winbind is OK"
+else
+    status=2
+    statustxt="Active directory user resolution via winbind is CRITICAL"
+fi
+
+echo "$status Winbind_Users - $statustxt"
