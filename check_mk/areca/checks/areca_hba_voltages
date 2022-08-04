@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/env python3
 # -*- encoding: utf-8; py-indent-offset: 4 -*-
 # +------------------------------------------------------------------+
 # |             ____ _               _        __  __ _  __           |
@@ -92,14 +92,15 @@ def inventory_areca_hba_voltages(info):
 
 def check_areca_hba_voltages(item, _no_params, info):
     areca_info = parse_areca(info, "voltages")
+    epsilon = 10
     if item in areca_info["voltages"].keys():
         # i'm fetching the voltage from the label and try to alert on the difference.
-        v_cur   = float(areca_info["voltages"][item])
-        v_rated = float(item.split()[-1].replace("V", "")) * 1000
-        perfdata = [ ( item, v_rated, v_cur, 0, 0 ) ]
+        v_cur   = float(areca_info["voltages"][item]) / 1000.0
+        v_rated = float(item.split()[-1].replace("V", ""))
+        perfdata = [ ( "voltage", v_cur ) ]
         # this is now just a hardcoded level, could be improved.
-        if v_cur < v_rated - v_rated / 100*5 or v_cur > v_rated + v_rated / 100*5:
-            return (1, "WARNING - Voltage is %02fV" % v_cur, perfdata)
+        if v_cur < v_rated - v_rated / 100*epsilon or v_cur > v_rated + v_rated / 100*epsilon:
+            return (1, "WARNING - Voltage is %02.3fV" % v_cur, perfdata)
         else:
             return (0, "OK - Voltage is ok", perfdata)
     return (3, "UNKNOWN - Voltage sensor not found in agent output")

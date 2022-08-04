@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/env python3
 # -*- encoding: utf-8; py-indent-offset: 4 -*-
 # +------------------------------------------------------------------+
 # |             ____ _               _        __  __ _  __           |
@@ -83,7 +83,7 @@
 
 # snmp_info  : oid(".1.3.6.1.4.1.18928.1.2.2.1.10.1"), [ "1", "2", "3" ]
 # default levels will not work well in this check
-areca_hba_temp_default_levels = (40, 45)
+areca_hba_temp_default_levels = (63, 69)
 def inventory_areca_hba_temp(info):
     inventory = []
     for line in info[0]:
@@ -109,8 +109,8 @@ def check_areca_hba_temp(item, params, info):
             else:
                 state = 0
 
-            perfdata = [ ( item, temp, warn, crit, 0 ) ]
-            return (state, nagios_state_names[state] + " - Temperature is %dC" % temp, perfdata)
+            perfdata = [ ( "temp", temp, warn, crit ) ]
+            return (state, "Temperature is %dC" % temp, perfdata)
     
     return (3, "UNKNOWN - sensor not found in agent output")
 
