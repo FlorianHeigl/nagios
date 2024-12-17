@@ -1,0 +1,51 @@
+#!/usr/bin/env python3
+
+
+factory_settings["pjlink_lamps_default_levels"] = {
+    "lifetime": 10000,
+    "thresholds": (0.80, 0.95),
+}
+
+
+def inventory_pjlink_lamps(info):
+    if len(info) > 0:
+        if "hours" in info[0]:
+            return [(None, {})]
+    return []
+        
+
+def check_pjlink_lamps(item, params, info):
+    if len(info) == 0:
+      status = 0
+      infotext = "Device is turned off (no info returned)"
+
+    if len(info) > 0:
+    # projector muss an sein, waere normal in state gespeichert, aber wegen encoding issue deaktiviert
+        lamp_hrs = int(info[0][0])
+        infotext = "Operation time is %d hours." % lamp_hrs
+        lifetime =  params['lifetime']
+    
+        if len(info) > 0 and params:
+            warn, crit = params['thresholds']
+            if lamp_hrs > crit * lifetime:
+                status = 2
+                infotext += " Please consider getting it replaced"
+            elif lamp_hrs > warn * lifetime:
+                status = 1
+            else:
+                status = 0
+        else:
+            status = 0
+            infotext += " No levels set.  ¯\_ (ツ)_/¯"
+    yield status, infotext
+
+
+
+check_info["pjlink_lamps"] = {
+    "check_function"        : check_pjlink_lamps,
+    "inventory_function"    : inventory_pjlink_lamps,
+    "service_description"   : "Beamer Lamp",
+    "has_perfdata"          : False,
+    "group"                 : 'beamer',
+    "default_levels_variable": "pjlink_lamps_default_levels",
+}

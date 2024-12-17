@@ -1,0 +1,77 @@
+#! /usr/bin/env python3
+
+import sys, os, getopt, re, subprocess
+from pypjlink import Projector
+
+#############################################################################
+def usage():
+#############################################################################
+    sys.stderr.write("""Check_MK PJ-Link Agent
+
+USAGE: agent_pjlink HOST
+       agent_pjlink -h
+
+ARGUMENTS:
+  HOST                          Host name or IP address of the target device
+
+OPTIONS:
+  -h, --help                    Show this help message and exit
+""")
+
+
+host_address    = None
+
+if len(sys.argv) == 2:
+    host_address = sys.argv[1]
+else:
+    sys.stderr.write("ERROR: Please specify exactly one host.\n")
+    sys.exit(1)
+
+
+#############################################################################
+# fetch information using library
+#############################################################################
+
+with Projector.from_address(host_address) as _proj:
+    _proj.authenticate()
+
+    print("<<<pjlink_power>>>")
+    powerstate = (_proj.get_power())
+    print(powerstate)
+
+    print("<<<pjlink_info>>>")
+    #print("vendor",  _proj.get_manufacturer())
+    #print("product", _proj.get_product_name())
+
+    print("<<<pjlink_components>>>")
+    for component, state in _proj.get_errors().items():
+        print(component, state)
+
+    #lamp info (operating hours etc) kommt nur wenn der beamer an ist
+    # if you really got a cinema style 3-lamp beamer you'll have to improve this.
+    print("<<<pjlink_lamps>>>")
+    if powerstate == "on":
+        print("%d hours" %  _proj.get_lamps()[0][0])
+
+    print("<<<pjlink_inputs>>>")
+    print(powerstate)
+    if powerstate == "on":
+        active_input = "%s %d" % _proj.get_input()
+    
+    # 'inputs_all': [('RGB', 1), ('DIGITAL', 1), ('DIGITAL', 2), ('DIGITAL', 3), ('NETWORK', 1)],
+    for signal, id in _proj.get_inputs():
+        input = "%s %d" % (signal, id)
+
+        if powerstate != "on":
+            print(input)
+            continue
+        if input == active_input:
+            print(input + ", active")
+        else:
+            print(input)
+
+    print("<<<pjlink_mute>>>")
+    if powerstate == "on":
+        video, audio = _proj.get_mute()
+        print("Video: %s" % video)
+        print("Audio: %s" % audio)

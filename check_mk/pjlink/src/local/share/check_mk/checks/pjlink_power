@@ -1,0 +1,27 @@
+#!/usr/bin/env python3
+
+def inventory_pjlink_power(info):
+    if len(info) > 0 and info[0][0] != "NULL":
+        return [(None, None)]
+        
+def check_pjlink_power(item, params, info):
+        _i = info[0][0]
+        # accept transient states
+        if _i in ["warming", "cooling", "warm-up"]:
+            state = 0
+        if _i == "on":
+            state = 0
+        if _i == "off":
+            state = 1
+        yield state, "Device is turned %s" % _i
+    
+
+
+
+check_info["pjlink_power"] = {
+    "check_function"        : check_pjlink_power,
+    "inventory_function"    : inventory_pjlink_power,
+    "service_description"   : "Power",
+    "has_perfdata"          : False,
+    "group"                 : 'beamer',
+}

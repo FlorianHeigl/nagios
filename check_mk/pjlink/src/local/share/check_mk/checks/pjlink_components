@@ -1,0 +1,29 @@
+#!/usr/bin/env python3
+
+def inventory_pjlink_components(info):
+    for component, _state in info:
+        pretty_c = component.title()
+        yield pretty_c, None
+        
+def check_pjlink_components(item, params, info):
+    for component, state in info:
+        pretty_c = component.title()
+        if pretty_c != item:
+            continue
+        if state == "ok":
+           _s = 0
+        if state == "error" and component == "Filter":
+           _s = 1
+        if state == "error":
+           _s = 2
+
+        yield _s, "Component is %s" % state
+    
+
+check_info["pjlink_components"] = {
+    "check_function"        : check_pjlink_components,
+    "inventory_function"    : inventory_pjlink_components,
+    "service_description"   : "%s",
+    "has_perfdata"          : False,
+    "group"                 : 'beamer_components',
+}

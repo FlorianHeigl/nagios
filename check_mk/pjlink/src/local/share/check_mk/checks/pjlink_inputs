@@ -1,0 +1,68 @@
+#!/usr/bin/env python3
+
+# hole liste aller inputs (fuer host inventory)
+# invaentarisiere aktuellen input
+# alarmiere wenn aktueller input != gespeicherter input
+
+def inventory_pjlink_inputs(info):
+# [['RGB', '1,', 'active'], ['RGB', '2'], ['VIDEO', '2'], ['VIDEO', '1'], ['DIGITAL', '1'], ['STORAGE', '2'], ['STORAGE', '3'], ['STORAGE', '6'], ['STORAGE', '7']]
+# STORAGE-N in dem Falle sind nur die "Classroom Settings." (Hintergrundmuster)
+
+    power = info[0]
+    inputs = info[1:]
+    for input_info in inputs:
+        # detect an active input
+        if len(input_info) == 3 and input_info[2] in [ "active"]:
+            params = {}
+            input, input_id, input_state = input_info
+            _i = input + "-" + input_id
+            params['active_input'] = _i
+            #return [(None, _inputdesc)]
+            yield None, params
+        
+def check_pjlink_inputs(item, params, info):
+
+    power = info[0][0]
+    inputs = info[1:]
+
+    if   power == "on":
+        for line in inputs:
+            input, input_id = line[0], line[1]
+            _inputdesc = input + "-" + input_id
+    
+            # beschreibt einen aktiven input
+            if len(line) == 3:
+                # beschreibt den richtigen input
+                if  _inputdesc == params['active_input']:
+                    state = 0
+                    msg = "correct input active: %s" % _inputdesc
+                    break
+                # beschreibt einen anderen input
+                else:
+                    state = 2
+                    msg = "wrong input active: %s(!!), expected %s" % (_inputdesc, params['active_input'])
+                    break
+        # kein input aktiv, sollte ein warning sein, _wenn_ das ding an ist
+        else:
+             state = 1
+             msg = "no input selected"
+
+    # wenn beamer nicht an ist, muss es ok sagen
+    elif power == "off":
+       state = 0
+       msg = "Device is turned off (no active input)"
+    else:
+       msg = "error in data"
+       state = 3
+
+    yield state, msg
+    
+
+check_info["pjlink_inputs"] = {
+    "check_function"        : check_pjlink_inputs,
+    "inventory_function"    : inventory_pjlink_inputs,
+    "service_description"   : "Selected Input",
+    "has_perfdata"          : False,
+    "group"                 : 'beamer_inputs',
+}
+
