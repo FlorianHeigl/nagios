@@ -1,100 +1,43 @@
-#!/usr/bin/python
-# -*- encoding: utf-8; py-indent-offset: 4 -*-
-# +------------------------------------------------------------------+
-# |             ____ _               _        __  __ _  __           |
-# |            / ___| |__   ___  ___| | __   |  \/  | |/ /           |
-# |           | |   | '_ \ / _ \/ __| |/ /   | |\/| | ' /            |
-# |           | |___| | | |  __/ (__|   <    | |  | | . \            |
-# |            \____|_| |_|\___|\___|_|\_\___|_|  |_|_|\_\           |
-# |                                                                  |
-# +------------------------------------------------------------------+
 #
-# This file is an addon for Check_MK.
-# The official homepage for this check is at http://bitbucket.org/darkfader
+#  check_mk plugin for xen
+#  
+#  This file is the Check plugin file and is to be kept at local/lib/check_mk/base/plugins/agent_based/ directory of the Checkmk server. Filename should end with py. 
+#  This works along with the agent plugin file named xen_vms which is to be kept at  /usr/lib/check_mk_agent/plugins/ folder of the xen base server which is to be monitored.
 #
-# check_mk is free software;  you can redistribute it and/or modify it
-# under the  terms of the  GNU General Public License  as published by
-# the Free Software Foundation in version 2.  check_mk is  distributed
-# in the hope that it will be useful, but WITHOUT ANY WARRANTY;  with-
-# out even the implied warranty of  MERCHANTABILITY  or  FITNESS FOR A
-# PARTICULAR PURPOSE. See the  GNU General Public License for more de-
-# ails.  You should have  received  a copy of the  GNU  General Public
-# License along with GNU Make; see the file  COPYING.  If  not,  write
-# to the Free Software Foundation, Inc., 51 Franklin St,  Fifth Floor,
-# Boston, MA 02110-1301 USA.
 
+from .agent_based_api.v1 import *
 
+#def discover_xen_vms(section):
+#    (Service(item="VM %s" % line[1], parameters={}) for line in section if line[0] == "vm")
 
-def inventory_xen_vms(checkname, info):
-    return [ (("%s" % line[1] ), None) for line in info if line[0] == "vm" ]
+def discover_xen_vms(section):
+    for line in section:
+        if line[0] == "vm":
+              yield Service(item=line[1])
 
-
-def check_xen_vms(item, params, info):
-    for line in info:
+def check_xen_vms(item, section):
+    for line in section:
         xentype = line[0]
         if xentype == "vm":
             xentype, vmname, status = line
             if vmname == item:
-         	    if status == "running":
-        	        return (0, "OK - VM %s status is %s" % (item, status))
+                    if status == "running":
+                        yield Result(state=State.OK, summary="OK - VM %s status is %s" % (item, status))
+                        return
                     elif status == "paused":
-                        return (1, "WARN - VM %s status is %s" % (item, status))
+                        yield Result(state=State.WARN, summary="WARN - VM %s status is %s" % (item, status))
+                        return
                     elif status == "crashed":
-                        return (2, "CRIT - VM %s status is %s" % (item, status))
+                        yield Result(state=State.CRIT, summary="CRIT - VM %s status is %s" % (item, status))
+                        return
                     else:
-                        return (3, "UNKNOWN - VM %s status unknown" % (item, status))
-    return (2, "CRIT - VM %s status is down or deleted" % item)
+                        yield Result(state=State.UNKNOWN, summary="UNKNOWN - VM %s status unknown" % (item, status))
+                        return
 
 
-check_info['xen.vms'] = \
-        (check_xen_vms, "VM %s", 0, inventory_xen_vms)
-
-
-# these numbers are not recommended, i will probably switch to hardcoded MB values?
-check_xen_mem_default_levels = (90.0,96.0)
-
-
-def inventory_xen_mem(checkname, info):
-    for line in info:
-        if line[0] == "mem":
-            return [ (None, 'check_xen_mem_default_levels') ]
-
-
-def check_xen_mem(checkname, params, info):
-    # warn, crit should be given as percentages. or should it rather be a fixed number of MB that has
-    # to be free under any circumstances?
-    warn, crit = params
-    for line in info:
-        if line[0] == "mem":
-            mem_total  = int(line[1])
-            mem_free   = int(line[2])
-            # dom0 mem might be reported or might be not...
-            mem_dom0   = saveint(line[3])
-            mem_used   = mem_total - mem_free
-            perc_used  = mem_used * 100 / float(mem_total) 
-
-            infotext   = (" - %d MB used (this is %.2f%% of usable RAM size)" % (mem_used, perc_used))
-
-            # add here: also plot line for warn, crit and dom0 memory usage (agent plugin sends data now)
-            perfdata   = [('ramused', str (mem_used) + 'MB', '', '', 0, mem_total)]
- 
-            # actually check something here ;)
-            if perc_used > crit:
-                return (2, "CRIT" + infotext + "!!", perfdata)
-            elif perc_used > warn:
-                return (1, "WARN" + infotext + "!", perfdata)
-     
-            # one more elif here, check if dom0 memory usage is >30% of total mem, then we probably caught 
-            # someone using dom0 balloon. This can corrupt the xen heap and backend drivers. go to warning.
-            # unfortunately that way one error can shadow the other
-            
-            elif perc_used < warn:
-                return (0, "OK" + infotext, perfdata)
-            else:
-                return (3, "UNKNOWN - invalid data from agent")
-            
-
-    return (3, "UNKNOWN")
-
-
-check_info['xen.mem'] = (check_xen_mem, "Host Memory used", 1, inventory_xen_mem)
+register.check_plugin(
+    name = "xen_vms",
+    service_name = "VM %s",
+    discovery_function = discover_xen_vms,
+    check_function = check_xen_vms,
+)
