@@ -1,0 +1,41 @@
+#! /usr/bin/env bash
+  
+# forward status from ScaleFlux CSD to Check_MK for monitoring
+# capacity / temp etc.
+# part of my benchmarks / best practice
+
+#SFX card: /dev/sfdv0n1
+#PCIe Vendor ID:                    0xcc53                             
+#PCIe Subsystem Vendor ID:          0xcc53                             
+#Manufacturer:                      ScaleFlux                          
+#Model:                             CSD 2000 Series                    
+#Serial Number:                     UC1945A7118M                       
+#OPN:                               CSDU3RF040B1                       
+#FPGA BitStream:                    4705                               
+#Drive Type:                        U.2-V                              
+#Software Revision:                 3.1.1.0-51107                      
+#Temperature:                       54 C                               
+#Power Consumption:                 11 W                               
+#Atomic Write mode:                 OFF                                
+#Percentage Used:                   0%                                 
+#Data Read:                         2389 GiB                           
+#Data Written:                      2739 GiB                           
+#Correctable Error Cnt:             0                                  
+#Uncorrectable Error Cnt:           0                                  
+#Check Log:                         0                                  
+#PCIe Link Status:                  Gen3 x4                            
+#PCIe Device Status:                Good                               
+#Disk Capacity:                     3840 GB                            
+#Physical Capacity:                 3840 GB                            
+#Compression Ratio:                 120%                               
+#Physical Used Ratio:               64%                                
+#Critical Warning:                  0    
+
+
+if ! type sfx-status >/dev/null; then
+    exit 0
+fi
+
+
+echo '<<<sfx_csd_status:sep(58)>>>'
+sfx-status

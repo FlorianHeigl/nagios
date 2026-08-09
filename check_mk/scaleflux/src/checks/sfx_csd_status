@@ -1,0 +1,91 @@
+#!/usr/bin/python
+# -*- encoding: utf-8; py-indent-offset: 4 -*-
+
+
+# alert for erroneous status from ScaleFlux CSD to Check_MK for monitoring
+# capacity / temp etc.
+# part of my benchmarks / best practice
+# complete hack job because i'm tired
+
+#SFX card: /dev/sfdv0n1
+#PCIe Vendor ID:                    0xcc53
+#PCIe Subsystem Vendor ID:          0xcc53
+#Manufacturer:                      ScaleFlux
+#Model:                             CSD 2000 Series
+#Serial Number:                     UC1945A7118M
+#OPN:                               CSDU3RF040B1
+#FPGA BitStream:                    4705
+#Drive Type:                        U.2-V
+#Software Revision:                 3.1.1.0-51107
+#Temperature:                       54 C
+#Power Consumption:                 11 W
+#Atomic Write mode:                 OFF
+#Percentage Used:                   0%
+#Data Read:                         2389 GiB
+#Data Written:                      2739 GiB
+#Correctable Error Cnt:             0
+#Uncorrectable Error Cnt:           0
+#Check Log:                         0
+#PCIe Link Status:                  Gen3 x4
+#PCIe Device Status:                Good
+#Disk Capacity:                     3840 GB
+#Physical Capacity:                 3840 GB
+#Compression Ratio:                 120%
+#Physical Used Ratio:               64%
+#Critical Warning:                  0
+
+
+# add parser for n cards >1
+def parse_sfx_csd_status(info):
+    parsed = {}
+    for line in info:
+        if line[0] == "SFX card":
+            item = line[1].replace(" /dev/","")
+            parsed[item] = {}
+        else:
+            parsed[item][line[0]] = line[1].lstrip()
+
+    return parsed
+
+
+def inventory_sfx_csd_status(info):
+    parsed = parse_sfx_csd_status(info)
+    #import pprint
+    #pprint.pprint(parsed)
+    for entry in parsed:
+        yield entry, None
+
+
+def check_sfx_csd_status(item, params, info):
+    state = 0
+    msg = []
+    parsed = parse_sfx_csd_status(info)
+    if   int(parsed[item]["Critical Warning"]) != 0:
+        msg += [ "has Critical Warning" ]
+        state = 2
+
+    temp = int(parsed[item]["Temperature"].replace(" C",""))
+    if   temp >= 65:
+        msg += [ "is overheating (%d) C" % temp ]
+        state = 2
+
+    if   int(parsed[item]["Uncorrectable Error Cnt"]) > 0:
+        msg += ["has uncorrected errors"]
+        state = 2
+
+    if   int(parsed[item]["Percentage Used"].replace("%","")) >= 99:
+        msg += ["is full"]
+        state = 2
+
+    if   state != 0:
+        yield state, (" ").join(msg)
+    else:
+        yield state, "is operating normally"
+
+
+
+check_info['sfx_csd_status'] = {
+    'inventory_function': inventory_sfx_csd_status,
+    'check_function': check_sfx_csd_status,
+    'service_description': 'CSD Status %s',
+}
